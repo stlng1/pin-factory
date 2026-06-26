@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlixBridge Pin Factory v2</title>
+    <style>
+        /* ── Reset & Base ── */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #0b0e14;
+            color: #e8edf5;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+        .app {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0 24px;
+            border-bottom: 1px solid #2a2f3a;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f59e0b;
+            letter-spacing: -0.5px;
+        }
+        .logo span {
+            color: #ea580c;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #1e293b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: #171d26;
+            padding: 4px;
+            border-radius: 12px;
+            margin: 24px 0;
+        }
+        .tab {
+            padding: 10px 28px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .tab:hover {
+            color: #e8edf5;
+        }
+        .tab.active {
+            background: #2a2f3a;
+            color: #fff;
+        }
+
+        /* ── Panels ── */
+        .panel {
+            display: none;
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .panel.active {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        @media (max-width: 900px) {
+            .panel.active {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: #141a24;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #1e2632;
+        }
+        .card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #f1f5f9;
+        }
+        .card label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            margin-top: 14px;
+        }
+        .card label:first-of-type {
+            margin-top: 0;
+        }
+
+        /* ── Inputs ── */
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0b0e14;
+            border: 1px solid #2a2f3a;
+            border-radius: 8px;
+            color: #e8edf5;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #ea580c;
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        select {
+            cursor: pointer;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: #ea580c;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #c2410c;
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-secondary {
+            background: #2a2f3a;
+            color: #e8edf5;
+        }
+        .btn-secondary:hover {
+            background: #3a3f4a;
+        }
+        .btn-success {
+            background: #16a34a;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2a2f3a;
+            color: #94a3b8;
+        }
+        .btn-outline:hover {
+            border-color: #ea580c;
+            color: #e8edf5;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        /* ── Preview ── */
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .preview-container canvas {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            background: #0b0e14;
+        }
+        .preview-placeholder {
+            width: 100%;
+            aspect-ratio: 2/3;
+            max-width: 400px;
+            background: #0b0e14;
+            border-radius: 12px;
+            border: 2px dashed #2a2f3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #475569;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* ── Copy Preview ── */
+        .copy-box {
+            background: #0b0e14;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #1e2632;
+            margin-top: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .copy-box strong {
+            color: #f1f5f9;
+        }
+        .copy-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .copy-options button {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        /* ── Bulk Table ── */
+        .bulk-table-wrap {
+            overflow-x: auto;
+            margin-top: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .bulk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .bulk-table th {
+            text-align: left;
+            padding: 10px 8px;
+            background: #0b0e14;
+            color: #94a3b8;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            border-bottom: 2px solid #1e2632;
+        }
+        .bulk-table td {
+            padding: 8px;
+            border-bottom: 1px solid #1e2632;
+            vertical-align: middle;
+        }
+        .bulk-table td input,
+        .bulk-table td select {
+            padding: 6px 8px;
+            font-size: 12px;
+        }
+        .bulk-table .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .bulk-table .status-dot.pending {
+            background: #64748b;
+        }
+        .bulk-table .status-dot.resolved {
+            background: #22c55e;
+        }
+        .bulk-table .status-dot.error {
+            background: #ef4444;
+        }
+        .bulk-table .status-dot.generated {
+            background: #f59e0b;
+        }
+
+        /* ── Progress ── */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #1e2632;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            background: #ea580c;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: #e8edf5;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border-left: 4px solid #22c55e;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            transform: translateY(120%);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+        .toast.show {
+            transform: translateY(0);
+        }
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        /* ── Settings Modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal {
+            background: #141a24;
+            padding: 32px;
+            border-radius: 16px;
+            max-width: 480px;
+            width: 90%;
+            border: 1px solid #2a2f3a;
+        }
+        .modal h2 {
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        .modal .btn-group {
+            margin-top: 20px;
+        }
+
+        /* ── Misc ── */
+        .flex {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .text-muted {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0e14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2f3a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a3f4a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+
+        <!-- ─── HEADER ─── -->
+        <header class="header">
+            <div class="logo">Flix<span>Bridge</span> <span style="font-size:14px;color:#94a3b8;font-weight:400;">Pin Factory v2</span></div>
+            <div class="header-actions">
+                <span class="badge">⚡ Bulk Ready</span>
+                <button class="btn btn-secondary btn-sm" onclick="openSettings()">⚙️ Settings</button>
+            </div>
+        </header>
+
+        <!-- ─── TABS ─── -->
+        <div class="tabs">
+            <button class="tab active" data-tab="single">🎬 Single Pin</button>
+            <button class="tab" data-tab="bulk">📦 Bulk Generator</button>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- ─── PANEL: SINGLE ─── -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <div class="panel active" id="panel-single">
+
+            <!-- LEFT: Inputs -->
+            <div class="card">
+                <h3>🎯 Movie &amp; Copy</h3>
+
+                <label>Movie Title</label>
+                <div class="flex" style="gap:8px;">
+                    <input type="text" id="single-title" placeholder="e.g. Inception" />
+                    <button class="btn btn-primary btn-sm" id="single-search-btn" style="white-space:nowrap;">🔍 Search</button>
+                </div>
+                <div id="single-search-results" class="mt-8" style="max-height:160px;overflow-y:auto;"></div>
+
+                <label>Template Variant</label>
+                <select id="single-template">
+                    <option value="whereToWatch">Where to Watch</option>
+                    <option value="comingSoon">Coming Soon</option>
+                    <option value="nowStreaming">Now Streaming</option>
+                    <option value="leavingSoon">⚠️ Leaving Soon</option>
+                </select>
+
+                <label>Title Variant</label>
+                <select id="single-title-variant">
+                    <option value="0">Variant A</option>
+                    <option value="1">Variant B</option>
+                    <option value="2">Variant C</option>
+                </select>
+
+                <div class="row mt-8">
+                    <div>
+                        <label>Year</label>
+                        <input type="text" id="single-year" />
+                    </div>
+                    <div>
+                        <label>Genre</label>
+                        <input type="text" id="single-genre" />
+                    </div>
+                </div>
+
+                <label>Synopsis (for description)</label>
+                <textarea id="single-synopsis" rows="2"></textarea>
+
+                <label>Generated Copy</label>
+                <div class="copy-box" id="single-copy-preview">Search for a movie to generate copy.</div>
+                <div class="copy-options">
+                    <button class="btn btn-secondary btn-sm" onclick="copySingleText()">📋 Copy Text</button>
+                    <button class="btn btn-secondary btn-sm" onclick="regenerateSingleCopy()">🔄 Regenerate</button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="single-generate-btn" onclick="generateSinglePin()">🎨 Generate Pin</button>
+                </div>
+            </div>
+
+            <!-- RIGHT: Preview -->
+            <div class="card">
+                <h3>🖼️ Preview</h3>
+                <div class="preview-container">
+                    <div id="single-preview-area">
+                        <div class="preview-placeholder">Generate a pin to see preview</div>
+                    </div>
+                    <div class="btn-group" id="single-output-buttons" style="display:none;">
+                        <button class="btn btn-success" onclick="downloadSinglePNG()">⬇️ Download PNG</button>
+                        <button class="btn btn-secondary" onclick="copySingleText()">📋 Copy Text</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- ─── PANEL: BULK ─── -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <div class="panel" id="panel-bulk">
+
+            <!-- LEFT: Bulk Input -->
+            <div class="card">
+                <h3>📦 Bulk Import</h3>
+                <label>Paste movie titles (one per line or comma-separated)</label>
+                <textarea id="bulk-input" rows="6" placeholder="Inception&#10;The Dark Knight&#10;Interstellar&#10;The Prestige&#10;Memento"></textarea>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="resolveBulk()">🔍 Resolve All</button>
+                    <button class="btn btn-secondary" onclick="clearBulk()">🗑️ Clear</button>
+                </div>
+
+                <label class="mt-16">Bulk Template Variant</label>
+                <select id="bulk-template-select">
+                    <option value="whereToWatch">Where to Watch</option>
+                    <option value="comingSoon">Coming Soon</option>
+                    <option value="nowStreaming">Now Streaming</option>
+                    <option value="leavingSoon">⚠️ Leaving Soon</option>
+                </select>
+
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="generateBulk()">⚡ Generate All</button>
+                    <button class="btn btn-secondary" onclick="downloadBulkZIP()">📦 Download ZIP</button>
+                </div>
+
+                <div class="progress-bar"><div class="fill" id="bulk-progress-fill"></div></div>
+                <div class="progress-text" id="bulk-progress-text">Ready</div>
+            </div>
+
+            <!-- RIGHT: Bulk Table -->
+            <div class="card">
+                <h3>📋 Queue <span id="bulk-count" class="text-muted">(0 items)</span></h3>
+                <div class="bulk-table-wrap" id="bulk-table-wrap">
+                    <table class="bulk-table">
+                        <thead>
+                            <tr>
+                                <th style="width:24px;">#</th>
+                                <th>Title</th>
+                                <th style="width:80px;">Year</th>
+                                <th style="width:100px;">Template</th>
+                                <th style="width:60px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulk-table-body">
+                            <tr><td colspan="5" class="text-center text-muted" style="padding:30px;">Add movies to get started</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ─── TOAST ─── -->
+        <div class="toast" id="toast"></div>
+
+        <!-- ─── SETTINGS MODAL ─── -->
+        <div class="modal-overlay" id="settings-modal">
+            <div class="modal">
+                <h2>⚙️ Settings</h2>
+                <label>TMDB API Key</label>
+                <input type="text" id="settings-tmdb-key" placeholder="Enter your TMDB API key" />
+                <p class="text-muted mt-8" style="font-size:12px;">Get a free key at <a href="https://www.themoviedb.org/signup" target="_blank" style="color:#ea580c;">themoviedb.org</a></p>
+                <label class="mt-12">Default Board Name (for CSV)</label>
+                <input type="text" id="settings-board" placeholder="Movie Streaming Guides" />
+                <label class="mt-12">UTM Source</label>
+                <input type="text" id="settings-utm-source" value="pinterest" />
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveSettings()">💾 Save</button>
+                    <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
+    </script>
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        //  STATE
+        // ═══════════════════════════════════════════════════════════════
+
+        const state = {
+            // Single mode
+            singleMovie: null, // { id, title, year, genre, director, cast, synopsis, poster_path }
+            singleCopy: null, // { title, description, hashtags }
+            singleCanvasData: null, // dataURL
+            singleTemplate: 'whereToWatch',
+
+            // Bulk mode
+            bulkItems: [], // [{ id, title, year, genre, synopsis, poster_path, template, status, generatedDataURL }]
+            bulkGenerated: false,
+
+            // Settings (persisted in localStorage)
+            settings: {
+                tmdbKey: '',
+                boardName: 'Movie Streaming Guides',
+                utmSource: 'pinterest',
+            },
+
+            // Copy templates
+            copyTemplates: {
+                whereToWatch: {
+                    titles: [
+                        "Where to Watch {{title}} ({{year}}) — Streaming Guide 🎬",
+                        "{{title}} ({{year}}): Where to Stream It Right Now 🍿",
+                        "Your Guide to Watching {{title}} in {{currentYear}} 📺"
+                    ],
+                    descriptions: [
+                        "{{director}}'s {{genre}} masterpiece is a must-watch.\n\n{{castSnippet}} star in this {{genre}} film that will keep you on the edge of your seat.\n\nFind exactly where to stream {{title}} in {{currentYear}}. No spoilers, no clickbait — just the facts.",
+                        "Looking for {{title}}? We've got you covered.\n\n{{synopsisSnippet}}\n\nSave this pin for your next movie night! 🍿"
+                    ],
+                    hashtagGenres: {
+                        "Sci-Fi": ["#SciFiMovies", "#SpaceMovies", "#SciFiFilm"],
+                        "Action": ["#ActionMovies", "#Blockbuster", "#ActionFilm"],
+                        "Drama": ["#DramaMovies", "#OscarWorthy", "#MovieDrama"],
+                        "Comedy": ["#ComedyMovies", "#FunnyFilms", "#ComedyFilm"],
+                        "Horror": ["#HorrorMovies", "#ScaryMovies", "#HorrorFilm"],
+                        "Thriller": ["#ThrillerMovies", "#Suspense", "#ThrillerFilm"],
+                        "Romance": ["#RomanceMovies", "#LoveStory", "#RomCom"],
+                        "Adventure": ["#AdventureMovies", "#EpicFilm", "#AdventureFilm"],
+                        "Animation": ["#AnimationMovies", "#AnimatedFilm", "#FamilyMovies"],
+                        "Documentary": ["#DocumentaryMovies", "#TrueStory", "#DocFilm"]
+                    }
+                },
+                comingSoon: {
+                    titles: [
+                        "{{title}} — Coming to Streaming Soon 🎬",
+                        "Get Ready: {{title}} Hits Streaming Soon 📅",
+                        "{{title}} ({{year}}): Coming Soon to a Platform Near You"
+                    ],
+                    descriptions: [
+                        "{{title}} is coming to streaming soon! 🎉\n\n{{synopsisSnippet}}\n\nFollow for updates on exactly where to watch {{title}} when it drops.",
+                        "Mark your calendars! {{title}} is arriving on streaming soon.\n\n{{director}}'s {{genre}} film stars {{castSnippet}}.\n\nSave this pin to get notified when it's available."
+                    ],
+                    hashtagGenres: {} // same as above
+                },
+                nowStreaming: {
+                    titles: [
+                        "{{title}} — Now Streaming! 🎉",
+                        "{{title}} ({{year}}) Is Now Streaming — Watch Today 🍿",
+                        "Just Dropped: {{title}} Is Available to Stream Now"
+                    ],
+                    descriptions: [
+                        "{{title}} is NOW STREAMING! 🔥\n\n{{synopsisSnippet}}\n\nFind out exactly where to watch {{title}} right now. Don't wait — start your movie night!",
+                        "{{director}}'s {{genre}} film is finally here.\n\n{{castSnippet}} deliver {{reaction}} performances.\n\nClick through to find where to stream {{title}} today."
+                    ],
+                    hashtagGenres: {}
+                },
+                leavingSoon: {
+                    titles: [
+                        "⚠️ Leaving Soon: {{title}} — Last Chance to Watch!",
+                        "{{title}} ({{year}}) — Leaving Streaming This Month ⚠️",
+                        "Don't Miss It: {{title}} Is Leaving Soon 🚨"
+                    ],
+                    descriptions: [
+                        "{{title}} is leaving streaming soon! ⚠️\n\n{{synopsisSnippet}}\n\nDon't miss your chance to watch {{director}}'s {{genre}} masterpiece before it's gone.\n\nFind out where to watch {{title}} right now.",
+                        "Last chance to stream {{title}}! 🚨\n\n{{castSnippet}} star in this must-watch {{genre}} film.\n\nClick through to see where {{title}} is still available."
+                    ],
+                    hashtagGenres: {}
+                }
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        //  INIT
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            // Search on Enter
+            document.getElementById('single-title').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') searchSingleMovie();
+            });
+
+            // Template change -> regenerate preview
+            document.getElementById('single-template').addEventListener('change', () => {
+                if (state.singleMovie) generateSingleCopy();
+            });
+
+            // Title variant change -> update copy preview
+            document.getElementById('single-title-variant').addEventListener('change', () => {
+                if (state.singleMovie) generateSingleCopy();
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  SETTINGS
+        // ═══════════════════════════════════════════════════════════════
+
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem('flixbridge_pin_factory_settings');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    Object.assign(state.settings, parsed);
+                }
+            } catch (_) {}
+            document.getElementById('settings-tmdb-key').value = state.settings.tmdbKey || '';
+            document.getElementById('settings-board').value = state.settings.boardName || 'Movie Streaming Guides';
+            document.getElementById('settings-utm-source').value = state.settings.utmSource || 'pinterest';
+        }
+
+        function saveSettings() {
+            state.settings.tmdbKey = document.getElementById('settings-tmdb-key').value.trim();
+            state.settings.boardName = document.getElementById('settings-board').value.trim() || 'Movie Streaming Guides';
+            state.settings.utmSource = document.getElementById('settings-utm-source').value.trim() || 'pinterest';
+            localStorage.setItem('flixbridge_pin_factory_settings', JSON.stringify(state.settings));
+            closeSettings();
+            showToast('✅ Settings saved!');
+        }
+
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('open');
+            document.getElementById('settings-tmdb-key').value = state.settings.tmdbKey || '';
+            document.getElementById('settings-board').value = state.settings.boardName || 'Movie Streaming Guides';
+            document.getElementById('settings-utm-source').value = state.settings.utmSource || 'pinterest';
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('open');
+        }
+
+        // ─── API Key helpers ───
+        function getTMDBKey() {
+            if (!state.settings.tmdbKey) {
+                showToast('⚠️ Please set your TMDB API key in Settings (gear icon)', true);
+                openSettings();
+                return null;
+            }
+            return state.settings.tmdbKey;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  TOAST
+        // ═══════════════════════════════════════════════════════════════
+
+        let toastTimeout;
+
+        function showToast(msg, isError = false) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast';
+            if (isError) el.classList.add('error');
+            clearTimeout(toastTimeout);
+            // Force reflow
+            void el.offsetWidth;
+            el.classList.add('show');
+            toastTimeout = setTimeout(() => el.classList.remove('show'), 4000);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  SINGLE MODE — TMDB Search
+        // ═══════════════════════════════════════════════════════════════
+
+        let singleSearchResults = [];
+
+        async function searchSingleMovie() {
+            const key = getTMDBKey();
+            if (!key) return;
+
+            const title = document.getElementById('single-title').value.trim();
+            if (!title) { showToast('Please enter a movie title', true); return; }
+
+            const btn = document.getElementById('single-search-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Searching...';
+
+            try {
+                const url =
+                    `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${encodeURIComponent(title)}&language=en-US&page=1`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('TMDB API error: ' + res.status);
+                const data = await res.json();
+                singleSearchResults = data.results || [];
+                renderSearchResults(singleSearchResults);
+                if (singleSearchResults.length === 0) {
+                    showToast('No movies found. Try a different title.', true);
+                }
+            } catch (err) {
+                showToast('❌ Search failed: ' + err.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔍 Search';
+            }
+        }
+
+        function renderSearchResults(results) {
+            const container = document.getElementById('single-search-results');
+            if (!results || results.length === 0) {
+                container.innerHTML = '<p class="text-muted">No results</p>';
+                return;
+            }
+            container.innerHTML = results.map((m, i) =>
+                `<div style="padding:8px 12px;background:#0b0e14;border-radius:6px;margin-bottom:4px;cursor:pointer;border:1px solid transparent;transition:0.2s;"
+                      onmouseover="this.style.borderColor='#ea580c'" onmouseout="this.style.borderColor='transparent'"
+                      onclick="selectSingleMovie(${i})">
+                    <strong>${m.title}</strong> ${m.release_date ? ' (' + m.release_date.slice(0,4) + ')' : ''}
+                    <span style="color:#64748b;font-size:12px;">${m.vote_average ? '⭐ ' + m.vote_average.toFixed(1) : ''}</span>
+                  </div>`
+            ).join('');
+        }
+
+        async function selectSingleMovie(index) {
+            const movie = singleSearchResults[index];
+            if (!movie) return;
+
+            // Fetch full details for cast/genre
+            const key = getTMDBKey();
+            let details = movie;
+            try {
+                const url =
+                    `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${key}&language=en-US&append_to_response=credits`;
+                const res = await fetch(url);
+                if (res.ok) {
+                    const d = await res.json();
+                    details = d;
+                }
+            } catch (_) {}
+
+            const genre = details.genres && details.genres.length > 0 ? details.genres[0].name : 'Film';
+            const cast = details.credits && details.credits.cast ?
+                details.credits.cast.slice(0, 4).map(c => c.name) :
+                [];
+
+            state.singleMovie = {
+                id: details.id,
+                title: details.title,
+                year: details.release_date ? details.release_date.slice(0, 4) : '',
+                genre: genre,
+                director: (details.credits && details.credits.crew) ?
+                    details.credits.crew.filter(c => c.job === 'Director').map(c => c.name)[0] || 'a visionary director' :
+                    'a visionary director',
+                cast: cast,
+                synopsis: details.overview || '',
+                poster_path: details.poster_path || '',
+            };
+
+            // Fill inputs
+            document.getElementById('single-year').value = state.singleMovie.year;
+            document.getElementById('single-genre').value = state.singleMovie.genre;
+            document.getElementById('single-synopsis').value = state.singleMovie.synopsis;
+
+            // Generate copy
+            generateSingleCopy();
+
+            // Clear search results
+            document.getElementById('single-search-results').innerHTML =
+                `<div style="padding:8px;color:#22c55e;">✅ Selected: <strong>${state.singleMovie.title}</strong></div>`;
+
+            showToast(`✅ Loaded: ${state.singleMovie.title}`);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  COPY GENERATOR
+        // ═══════════════════════════════════════════════════════════════
+
+        function generateSingleCopy() {
+            const movie = state.singleMovie;
+            if (!movie) {
+                document.getElementById('single-copy-preview').textContent = 'Search for a movie to generate copy.';
+                return;
+            }
+
+            const templateKey = document.getElementById('single-template').value;
+            const variantIdx = parseInt(document.getElementById('single-title-variant').value) || 0;
+
+            const templates = state.copyTemplates[templateKey] || state.copyTemplates.whereToWatch;
+
+            // Build variables
+            const vars = {
+                title: movie.title,
+                year: movie.year || '2026',
+                currentYear: new Date().getFullYear(),
+                genre: movie.genre || 'film',
+                director: movie.director || 'a visionary director',
+                castSnippet: movie.cast && movie.cast.length > 0 ?
+                    movie.cast.slice(0, 3).join(', ') :
+                    'a talented cast',
+                synopsisSnippet: movie.synopsis ?
+                    movie.synopsis.slice(0, 150) + (movie.synopsis.length > 150 ? '...' : '') :
+                    'An unforgettable cinematic experience.',
+                reaction: 'unforgettable',
+                titleSlug: movie.title.toLowerCase().replace(/\s+/g, ''),
+                directorSlug: (movie.director || 'film').toLowerCase().replace(/\s+/g, ''),
+                leadActorSlug: movie.cast && movie.cast.length > 0 ?
+                    movie.cast[0].toLowerCase().replace(/\s+/g, '') :
+                    'movie',
+            };
+
+            // Pick title variant
+            const titleOptions = templates.titles || state.copyTemplates.whereToWatch.titles;
+            const title = fillTemplate(titleOptions[variantIdx % titleOptions.length] || titleOptions[0], vars);
+
+            // Pick description (use first one for now)
+            const descOptions = templates.descriptions || state.copyTemplates.whereToWatch.descriptions;
+            const description = fillTemplate(descOptions[0] || descOptions[1] || descOptions[0], vars);
+
+            // Build hashtags
+            const hashtags = buildHashtags(movie, templateKey);
+
+            state.singleCopy = { title, description, hashtags };
+
+            // Render preview
+            const preview = document.getElementById('single-copy-preview');
+            preview.innerHTML = `
+                <strong>📌 ${title}</strong>
+                <br><br>
+                ${description.replace(/\n/g, '<br>')}
+                <br><br>
+                <span style="color:#f59e0b;">${hashtags.join(' ')}</span>
+            `;
+        }
+
+        function buildHashtags(movie, templateKey) {
+            const tags = [];
+            const baseTags = ['#WhereToWatch', '#StreamingGuide', '#MovieNight'];
+
+            // Movie title
+            if (movie.title) {
+                const slug = movie.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (slug) tags.push('#' + slug);
+            }
+
+            // Director
+            if (movie.director && movie.director !== 'a visionary director') {
+                const slug = movie.director.toLowerCase().replace(/\s+/g, '');
+                if (slug) tags.push('#' + slug);
+            }
+
+            // Genre-based
+            const genreMap = state.copyTemplates.whereToWatch.hashtagGenres || {};
+            const genreKey = Object.keys(genreMap).find(g =>
+                movie.genre && movie.genre.toLowerCase().includes(g.toLowerCase())
+            );
+            if (genreKey && genreMap[genreKey]) {
+                tags.push(...genreMap[genreKey].slice(0, 2));
+            }
+
+            // Template-specific
+            if (templateKey === 'leavingSoon') {
+                tags.push('#LeavingSoon', '#LastChance', '#StreamingAlert');
+            } else if (templateKey === 'comingSoon') {
+                tags.push('#ComingSoon', '#NewOnStreaming');
+            } else if (templateKey === 'nowStreaming') {
+                tags.push('#NowStreaming', '#WatchNow');
+            }
+
+            // Ensure we have enough, deduplicate, limit to 12
+            const all = [...baseTags, ...tags];
+            const unique = [];
+            const seen = new Set();
+            for (const t of all) {
+                const clean = t.trim();
+                if (clean && !seen.has(clean)) {
+                    seen.add(clean);
+                    unique.push(clean);
+                }
+            }
+            return unique.slice(0, 12);
+        }
+
+        function fillTemplate(template, vars) {
+            let result = template;
+            for (const [key, val] of Object.entries(vars)) {
+                result = result.replace(new RegExp('{{' + key + '}}', 'g'), val || '');
+            }
+            return result;
+        }
+
+        function regenerateSingleCopy() {
+            if (state.singleMovie) generateSingleCopy();
+        }
+
+        function copySingleText() {
+            const copy = state.singleCopy;
+            if (!copy) { showToast('Generate copy first!', true); return; }
+            const text = `${copy.title}\n\n${copy.description}\n\n${copy.hashtags.join(' ')}`;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ Copy copied to clipboard!');
+            }).catch(() => {
+                // Fallback
+                const area = document.createElement('textarea');
+                area.value = text;
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand('copy');
+                area.remove();
+                showToast('✅ Copy copied to clipboard!');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  SINGLE MODE — PIN GENERATION (Canvas)
+        // ═══════════════════════════════════════════════════════════════
+
+        function generateSinglePin() {
+            const movie = state.singleMovie;
+            if (!movie) { showToast('Search and select a movie first!', true); return; }
+
+            const copy = state.singleCopy;
+            if (!copy) { generateSingleCopy(); }
+
+            const templateKey = document.getElementById('single-template').value;
+
+            // Build data for canvas
+            const data = {
+                title: movie.title,
+                year: movie.year || '',
+                genre: movie.genre || '',
+                posterPath: movie.poster_path,
+                template: templateKey,
+                copyTitle: copy ? copy.title : movie.title,
+            };
+
+            renderPinCanvas(data, (dataURL) => {
+                state.singleCanvasData = dataURL;
+                document.getElementById('single-preview-area').innerHTML =
+                    `<img src="${dataURL}" style="max-width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);" />`;
+                document.getElementById('single-output-buttons').style.display = 'flex';
+                showToast('✅ Pin generated!');
+            });
+        }
+
+        function renderPinCanvas(data, callback) {
+            const canvas = document.createElement('canvas');
+            const W = 1000,
+                H = 1500;
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext('2d');
+
+            // ── Background ──
+            const gradients = [
+                ['#0a0f1a', '#1a1a2e'],
+                ['#0a0f1a', '#1e1a2e'],
+                ['#0a0f1a', '#1e2a2e'],
+                ['#0a0f1a', '#2e1a1a'],
+                ['#0a0f1a', '#1a1a1a'],
+            ];
+            const gIdx = Math.floor(Math.random() * gradients.length);
+            const [c1, c2] = gradients[gIdx];
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, c1);
+            grad.addColorStop(1, c2);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            // ── Subtle pattern overlay ──
+            ctx.fillStyle = 'rgba(255,255,255,0.02)';
+            for (let i = 0; i < 30; i++) {
+                const x = Math.random() * W;
+                const y = Math.random() * H;
+                const r = 2 + Math.random() * 6;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // ── Top badge (template-specific) ──
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            let badgeText = '📺 WHERE TO WATCH';
+            if (data.template === 'comingSoon') badgeText = '📅 COMING SOON';
+            else if (data.template === 'nowStreaming') badgeText = '🎉 NOW STREAMING';
+            else if (data.template === 'leavingSoon') badgeText = '⚠️ LEAVING SOON';
+
+            ctx.font = 'bold 36px system-ui, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.12)';
+            ctx.fillText(badgeText, W / 2, 40);
+
+            // ── Poster ──
+            const posterW = 400,
+                posterH = 600;
+            const posterX = (W - posterW) / 2,
+                posterY = 180;
+
+            // Poster shadow
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 40;
+            ctx.shadowOffsetY = 8;
+            ctx.fillStyle = '#1a1a2a';
+            ctx.fillRect(posterX - 4, posterY - 4, posterW + 8, posterH + 8);
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Poster placeholder
+            ctx.fillStyle = '#2a2f3a';
+            ctx.fillRect(posterX, posterY, posterW, posterH);
+
+            if (data.posterPath) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    ctx.drawImage(img, posterX, posterY, posterW, posterH);
+                    drawTextOverlay(ctx, W, H, data);
+                    if (callback) callback(canvas.toDataURL('image/png'));
+                };
+                img.onerror = () => {
+                    // Draw placeholder text
+                    ctx.fillStyle = '#475569';
+                    ctx.font = '24px system-ui, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('🎬', posterX + posterW / 2, posterY + posterH / 2 - 20);
+                    ctx.font = '18px system-ui, sans-serif';
+                    ctx.fillText(data.title || 'Movie Poster', posterX + posterW / 2, posterY + posterH / 2 + 30);
+                    drawTextOverlay(ctx, W, H, data);
+                    if (callback) callback(canvas.toDataURL('image/png'));
+                };
+                img.src = `https://image.tmdb.org/t/p/w500${data.posterPath}`;
+            } else {
+                // No poster
+                ctx.fillStyle = '#475569';
+                ctx.font = '24px system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🎬', posterX + posterW / 2, posterY + posterH / 2 - 20);
+                ctx.font = '18px system-ui, sans-serif';
+                ctx.fillText(data.title || 'Movie Poster', posterX + posterW / 2, posterY + posterH / 2 + 30);
+                drawTextOverlay(ctx, W, H, data);
+                if (callback) callback(canvas.toDataURL('image/png'));
+            }
+        }
+
+        function drawTextOverlay(ctx, W, H, data) {
+            // ── Title ──
+            const titleY = 820;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            // Title shadow
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetY = 4;
+
+            const titleText = data.title || 'Movie Title';
+            const fontSize = titleText.length > 20 ? 52 : 60;
+            ctx.font = `bold ${fontSize}px system-ui, sans-serif`;
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillText(titleText, W / 2, titleY);
+
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetY = 0;
+
+            // ── Year ──
+            if (data.year) {
+                ctx.font = '28px system-ui, sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                ctx.fillText(data.year, W / 2, titleY + fontSize + 20);
+            }
+
+            // ── CTA Button ──
+            const ctaPositions = ['bottom-center', 'bottom-left', 'bottom-right'];
+            const pos = ctaPositions[Math.floor(Math.random() * ctaPositions.length)];
+
+            const btnW = 440,
+                btnH = 64;
+            let btnX, btnY = H - 120;
+
+            if (pos === 'bottom-left') btnX = 60;
+            else if (pos === 'bottom-right') btnX = W - btnW - 60;
+            else btnX = (W - btnW) / 2;
+
+            // Button shadow
+            ctx.shadowColor = 'rgba(234,88,12,0.3)';
+            ctx.shadowBlur = 30;
+            ctx.shadowOffsetY = 4;
+
+            // Button gradient
+            const grad = ctx.createLinearGradient(btnX, btnY, btnX + btnW, btnY + btnH);
+            grad.addColorStop(0, '#ea580c');
+            grad.addColorStop(1, '#c2410c');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.roundRect(btnX, btnY, btnW, btnH, 12);
+            ctx.fill();
+
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Button text
+            let ctaText = 'Find Where to Watch →';
+            if (data.template === 'comingSoon') ctaText = 'Coming Soon →';
+            else if (data.template === 'nowStreaming') ctaText = 'Watch Now →';
+            else if (data.template === 'leavingSoon') ctaText = 'Watch Before It\'s Gone →';
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 26px system-ui, sans-serif';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(ctaText, btnX + btnW / 2, btnY + btnH / 2);
+
+            // ── Logo / Brand ──
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.font = '18px system-ui, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.fillText('FlixBridge', W - 40, H - 20);
+
+            // ── TMDB Disclaimer (tiny) ──
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+            ctx.font = '10px system-ui, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.fillText('Data from TMDB - Not endorsed or certified by TMDB', 20, H - 10);
+        }
+
+        // ── roundRect polyfill for canvas ──
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (r > w / 2) r = w / 2;
+                if (r > h / 2) r = h / 2;
+                this.moveTo(x + r, y);
+                this.arcTo(x + w, y, x + w, y + h, r);
+                this.arcTo(x + w, y + h, x, y + h, r);
+                this.arcTo(x, y + h, x, y, r);
+                this.arcTo(x, y, x + w, y, r);
+                return this;
+            };
+        }
+
+        function downloadSinglePNG() {
+            if (!state.singleCanvasData) { showToast('Generate a pin first!', true); return; }
+            const a = document.createElement('a');
+            const movie = state.singleMovie;
+            const slug = movie ? movie.title.toLowerCase().replace(/\s+/g, '-') : 'pin';
+            a.download = `${slug}-pinterest-pin.png`;
+            a.href = state.singleCanvasData;
+            a.click();
+            showToast('⬇️ Downloading...');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  BULK MODE
+        // ═══════════════════════════════════════════════════════════════
+
+        async function resolveBulk() {
+            const key = getTMDBKey();
+            if (!key) return;
+
+            const raw = document.getElementById('bulk-input').value.trim();
+            if (!raw) { showToast('Paste some movie titles first!', true); return; }
+
+            // Parse titles
+            const titles = raw.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
+            if (titles.length === 0) { showToast('No valid titles found', true); return; }
+
+            state.bulkItems = [];
+            showToast(`🔍 Resolving ${titles.length} movies...`);
+
+            for (let i = 0; i < titles.length; i++) {
+                const title = titles[i];
+                try {
+                    const url =
+                        `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${encodeURIComponent(title)}&language=en-US&page=1`;
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('TMDB error');
+                    const data = await res.json();
+                    const movie = data.results && data.results[0];
+
+                    if (movie) {
+                        state.bulkItems.push({
+                            id: movie.id,
+                            title: movie.title,
+                            year: movie.release_date ? movie.release_date.slice(0, 4) : '',
+                            genre: 'Film',
+                            synopsis: movie.overview || '',
+                            poster_path: movie.poster_path || '',
+                            template: document.getElementById('bulk-template-select').value || 'whereToWatch',
+                            status: 'resolved',
+                            generatedDataURL: null,
+                        });
+                    } else {
+                        state.bulkItems.push({
+                            id: null,
+                            title: title,
+                            year: '',
+                            genre: '',
+                            synopsis: '',
+                            poster_path: '',
+                            template: document.getElementById('bulk-template-select').value || 'whereToWatch',
+                            status: 'error',
+                            generatedDataURL: null,
+                        });
+                    }
+                } catch (_) {
+                    state.bulkItems.push({
+                        id: null,
+                        title: title,
+                        year: '',
+                        genre: '',
+                        synopsis: '',
+                        poster_path: '',
+                        template: document.getElementById('bulk-template-select').value || 'whereToWatch',
+                        status: 'error',
+                        generatedDataURL: null,
+                    });
+                }
+                renderBulkTable();
+            }
+
+            showToast(`✅ Resolved ${state.bulkItems.filter(i => i.status === 'resolved').length}/${titles.length} movies`);
+            renderBulkTable();
+        }
+
+        function renderBulkTable() {
+            const tbody = document.getElementById('bulk-table-body');
+            const items = state.bulkItems;
+
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:30px;">Add movies to get started</td></tr>`;
+                document.getElementById('bulk-count').textContent = '(0 items)';
+                return;
+            }
+
+            document.getElementById('bulk-count').textContent = `(${items.length} items)`;
+
+            tbody.innerHTML = items.map((item, idx) => {
+                const statusDot = item.status === 'pending' ? 'pending' :
+                    item.status === 'resolved' ? 'resolved' :
+                    item.status === 'generated' ? 'generated' : 'error';
+                const statusLabel = item.status === 'pending' ? '⏳' :
+                    item.status === 'resolved' ? '✅' :
+                    item.status === 'generated' ? '🎨' : '❌';
+
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>
+                            <input type="text" value="${item.title}" 
+                                   onchange="updateBulkItem(${idx}, 'title', this.value)" 
+                                   style="background:transparent;border:none;color:#e8edf5;padding:4px;width:100%;" />
+                        </td>
+                        <td>
+                            <input type="text" value="${item.year}" 
+                                   onchange="updateBulkItem(${idx}, 'year', this.value)" 
+                                   style="width:70px;background:transparent;border:none;color:#e8edf5;padding:4px;" />
+                        </td>
+                        <td>
+                            <select onchange="updateBulkItem(${idx}, 'template', this.value)" style="width:100%;padding:4px;font-size:11px;">
+                                <option value="whereToWatch" ${item.template === 'whereToWatch' ? 'selected' : ''}>Where to Watch</option>
+                                <option value="comingSoon" ${item.template === 'comingSoon' ? 'selected' : ''}>Coming Soon</option>
+                                <option value="nowStreaming" ${item.template === 'nowStreaming' ? 'selected' : ''}>Now Streaming</option>
+                                <option value="leavingSoon" ${item.template === 'leavingSoon' ? 'selected' : ''}>⚠️ Leaving Soon</option>
+                            </select>
+                        </td>
+                        <td><span class="status-dot ${statusDot}" title="${item.status}"></span> ${statusLabel}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateBulkItem(idx, field, value) {
+            if (state.bulkItems[idx]) {
+                state.bulkItems[idx][field] = value;
+                if (field === 'title') {
+                    state.bulkItems[idx].status = 'pending';
+                }
+                renderBulkTable();
+            }
+        }
+
+        function clearBulk() {
+            state.bulkItems = [];
+            document.getElementById('bulk-input').value = '';
+            renderBulkTable();
+            document.getElementById('bulk-progress-fill').style.width = '0%';
+            document.getElementById('bulk-progress-text').textContent = 'Ready';
+        }
+
+        // ─── Generate Bulk ───
+
+        async function generateBulk() {
+            const items = state.bulkItems.filter(i => i.status === 'resolved' || i.status === 'generated');
+            if (items.length === 0) {
+                showToast('Resolve some movies first!', true);
+                return;
+            }
+
+            const total = items.length;
+            let completed = 0;
+
+            document.getElementById('bulk-progress-text').textContent = `Generating ${total} pins...`;
+
+            for (let i = 0; i < state.bulkItems.length; i++) {
+                const item = state.bulkItems[i];
+                if (item.status === 'error' || !item.id) continue;
+
+                // Generate canvas for this item
+                const data = {
+                    title: item.title,
+                    year: item.year || '',
+                    genre: item.genre || '',
+                    posterPath: item.poster_path,
+                    template: item.template || 'whereToWatch',
+                    copyTitle: item.title,
+                };
+
+                await new Promise((resolve) => {
+                    renderPinCanvas(data, (dataURL) => {
+                        item.generatedDataURL = dataURL;
+                        item.status = 'generated';
+                        completed++;
+                        const pct = Math.round((completed / total) * 100);
+                        document.getElementById('bulk-progress-fill').style.width = pct + '%';
+                        document.getElementById('bulk-progress-text').textContent =
+                            `Generated ${completed}/${total} pins`;
+                        renderBulkTable();
+                        resolve();
+                    });
+                });
+            }
+
+            state.bulkGenerated = true;
+            showToast(`✅ Generated ${total} pins! Click "Download ZIP" to export.`);
+        }
+
+        // ─── Download ZIP ───
+
+        function downloadBulkZIP() {
+            const items = state.bulkItems.filter(i => i.status === 'generated' && i.generatedDataURL);
+            if (items.length === 0) {
+                showToast('Generate some pins first!', true);
+                return;
+            }
+
+            const zip = new JSZip();
+            const folder = zip.folder('pins');
+            const metadata = [];
+            const tailwindRows = [];
+
+            items.forEach((item, idx) => {
+                const slug = item.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const filename = `${slug}-pinterest-pin.png`;
+                const dataURL = item.generatedDataURL;
+                const base64 = dataURL.split(',')[1];
+                folder.file(filename, base64, { base64: true });
+
+                // Build copy for this movie
+                const vars = {
+                    title: item.title,
+                    year: item.year || '2026',
+                    currentYear: new Date().getFullYear(),
+                    genre: item.genre || 'film',
+                    director: 'a visionary director',
+                    castSnippet: 'a talented cast',
+                    synopsisSnippet: item.synopsis ? item.synopsis.slice(0, 120) + '...' : 'An unforgettable cinematic experience.',
+                    reaction: 'unforgettable',
+                };
+                const templateKey = item.template || 'whereToWatch';
+                const templates = state.copyTemplates[templateKey] || state.copyTemplates.whereToWatch;
+                const titleOption = (templates.titles || ['{{title}}'])[0] || '{{title}}';
+                const descOption = (templates.descriptions || ['{{title}}'])[0] || '{{title}}';
+                const pinTitle = fillTemplate(titleOption, vars);
+                const pinDesc = fillTemplate(descOption, vars);
+                const hashtags = buildHashtags(item, templateKey);
+
+                const fullDesc = `${pinTitle}\n\n${pinDesc}\n\n${hashtags.join(' ')}`;
+
+                metadata.push({
+                    filename,
+                    title: item.title,
+                    year: item.year,
+                    genre: item.genre,
+                    template: item.template,
+                    pin_title: pinTitle,
+                    pin_description: pinDesc,
+                    hashtags: hashtags.join(' '),
+                    full_pin_text: fullDesc,
+                });
+
+                tailwindRows.push({
+                    'Pin Title': pinTitle,
+                    'Description': fullDesc,
+                    'Image URL': filename,
+                    'Board': state.settings.boardName || 'Movie Streaming Guides',
+                    'Scheduled Date': '',
+                });
+            });
+
+            // ── metadata.csv ──
+            const metaHeaders = ['filename', 'title', 'year', 'genre', 'template', 'pin_title', 'pin_description', 'hashtags',
+                'full_pin_text'
+            ];
+            let metaCSV = metaHeaders.join(',') + '\n';
+            metadata.forEach(row => {
+                metaCSV += metaHeaders.map(h => {
+                    const val = row[h] || '';
+                    return `"${val.replace(/"/g, '""')}"`;
+                }).join(',') + '\n';
+            });
+            folder.file('metadata.csv', metaCSV);
+
+            // ── tailwind-import.csv ──
+            const twHeaders = ['Pin Title', 'Description', 'Image URL', 'Board', 'Scheduled Date'];
+            let twCSV = twHeaders.join(',') + '\n';
+            tailwindRows.forEach(row => {
+                twCSV += twHeaders.map(h => {
+                    const val = row[h] || '';
+                    return `"${val.replace(/"/g, '""')}"`;
+                }).join(',') + '\n';
+            });
+            folder.file('tailwind-import.csv', twCSV);
+
+            // ── Generate ZIP ──
+            zip.generateAsync({ type: 'blob' }).then((blob) => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `flixbridge-pins-${new Date().toISOString().slice(0,10)}.zip`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                showToast(`📦 Downloaded ${items.length} pins + metadata!`);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  KEYBOARD SHORTCUTS
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                const active = document.querySelector('.panel.active');
+                if (active && active.id === 'panel-single') {
+                    e.preventDefault();
+                    generateSinglePin();
+                }
+            }
+            if (e.key === 'Escape') {
+                closeSettings();
+            }
+        });
+
+        console.log('🎬 FlixBridge Pin Factory v2 loaded!');
+        console.log('📌 Tips:');
+        console.log('  - Ctrl+Enter to generate a pin');
+        console.log('  - Bulk mode: paste a list of movies');
+        console.log('  - Settings: gear icon for TMDB API key');
+        console.log('  - TMDB disclaimer is now on all pins ✅');
+    </script>
+</body>
+</html>
