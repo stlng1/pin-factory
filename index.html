@@ -1,1611 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlixBridge Pin Factory v2</title>
-    <style>
-        /* ── Reset & Base ── */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: #0b0e14;
-            color: #e8edf5;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-        }
-        .app {
-            max-width: 1400px;
-            width: 100%;
-        }
-
-        /* ── Header ── */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0 24px;
-            border-bottom: 1px solid #2a2f3a;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #f59e0b;
-            letter-spacing: -0.5px;
-        }
-        .logo span {
-            color: #ea580c;
-        }
-        .header-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .badge {
-            background: #1e293b;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        /* ── Tabs ── */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            background: #171d26;
-            padding: 4px;
-            border-radius: 12px;
-            margin: 24px 0;
-        }
-        .tab {
-            padding: 10px 28px;
-            border: none;
-            background: transparent;
-            color: #94a3b8;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-        .tab:hover {
-            color: #e8edf5;
-        }
-        .tab.active {
-            background: #2a2f3a;
-            color: #fff;
-        }
-
-        /* ── Panels ── */
-        .panel {
-            display: none;
-            gap: 24px;
-            margin-top: 20px;
-        }
-        .panel.active {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-        }
-        @media (max-width: 900px) {
-            .panel.active {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ── Cards ── */
-        .card {
-            background: #141a24;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #1e2632;
-        }
-        .card h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #f1f5f9;
-        }
-        .card label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #94a3b8;
-            margin-bottom: 4px;
-            margin-top: 14px;
-        }
-        .card label:first-of-type {
-            margin-top: 0;
-        }
-
-        /* ── Inputs ── */
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px 14px;
-            background: #0b0e14;
-            border: 1px solid #2a2f3a;
-            border-radius: 8px;
-            color: #e8edf5;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #ea580c;
-            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
-        }
-        textarea {
-            min-height: 80px;
-            resize: vertical;
-            font-family: inherit;
-        }
-        select {
-            cursor: pointer;
-        }
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* ── Buttons ── */
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary {
-            background: #ea580c;
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: #c2410c;
-            transform: translateY(-1px);
-        }
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .btn-secondary {
-            background: #2a2f3a;
-            color: #e8edf5;
-        }
-        .btn-secondary:hover {
-            background: #3a3f4a;
-        }
-        .btn-success {
-            background: #16a34a;
-            color: #fff;
-        }
-        .btn-success:hover {
-            background: #15803d;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #2a2f3a;
-            color: #94a3b8;
-        }
-        .btn-outline:hover {
-            border-color: #ea580c;
-            color: #e8edf5;
-        }
-        .btn-sm {
-            padding: 6px 14px;
-            font-size: 12px;
-        }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-
-        /* ── Preview ── */
-        .preview-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-        }
-        .preview-container canvas {
-            max-width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            background: #0b0e14;
-        }
-        .preview-placeholder {
-            width: 100%;
-            aspect-ratio: 2/3;
-            max-width: 400px;
-            background: #0b0e14;
-            border-radius: 12px;
-            border: 2px dashed #2a2f3a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #475569;
-            font-size: 14px;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* ── Copy Preview ── */
-        .copy-box {
-            background: #0b0e14;
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid #1e2632;
-            margin-top: 12px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #cbd5e1;
-            max-height: 200px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-        }
-        .copy-box strong {
-            color: #f1f5f9;
-        }
-        .copy-options {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-        .copy-options button {
-            padding: 6px 14px;
-            font-size: 12px;
-        }
-
-        /* ── Bulk Table ── */
-        .bulk-table-wrap {
-            overflow-x: auto;
-            margin-top: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .bulk-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .bulk-table th {
-            text-align: left;
-            padding: 10px 8px;
-            background: #0b0e14;
-            color: #94a3b8;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 2;
-            border-bottom: 2px solid #1e2632;
-        }
-        .bulk-table td {
-            padding: 8px;
-            border-bottom: 1px solid #1e2632;
-            vertical-align: middle;
-        }
-        .bulk-table td input,
-        .bulk-table td select {
-            padding: 6px 8px;
-            font-size: 12px;
-        }
-        .bulk-table .status-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-        .bulk-table .status-dot.pending {
-            background: #64748b;
-        }
-        .bulk-table .status-dot.resolved {
-            background: #22c55e;
-        }
-        .bulk-table .status-dot.error {
-            background: #ef4444;
-        }
-        .bulk-table .status-dot.generated {
-            background: #f59e0b;
-        }
-
-        /* ── Progress ── */
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: #1e2632;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 12px;
-        }
-        .progress-bar .fill {
-            height: 100%;
-            background: #ea580c;
-            width: 0%;
-            transition: width 0.3s;
-        }
-        .progress-text {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: 4px;
-        }
-
-        /* ── Toast ── */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1e293b;
-            color: #e8edf5;
-            padding: 14px 24px;
-            border-radius: 12px;
-            border-left: 4px solid #22c55e;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            font-size: 14px;
-            transform: translateY(120%);
-            transition: transform 0.3s ease;
-            z-index: 999;
-        }
-        .toast.show {
-            transform: translateY(0);
-        }
-        .toast.error {
-            border-left-color: #ef4444;
-        }
-
-        /* ── Settings Modal ── */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.open {
-            display: flex;
-        }
-        .modal {
-            background: #141a24;
-            padding: 32px;
-            border-radius: 16px;
-            max-width: 480px;
-            width: 90%;
-            border: 1px solid #2a2f3a;
-        }
-        .modal h2 {
-            margin-bottom: 16px;
-            font-size: 20px;
-        }
-        .modal .btn-group {
-            margin-top: 20px;
-        }
-
-        /* ── Misc ── */
-        .flex {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .gap-8 {
-            gap: 8px;
-        }
-        .mt-8 {
-            margin-top: 8px;
-        }
-        .mt-12 {
-            margin-top: 12px;
-        }
-        .mt-16 {
-            margin-top: 16px;
-        }
-        .text-muted {
-            color: #94a3b8;
-            font-size: 13px;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .w-full {
-            width: 100%;
-        }
-        .hidden {
-            display: none !important;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b0e14;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2a2f3a;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3a3f4a;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlixBridge Pin Factory v2.1</title>
+<style>
+:root{--bg:#0b0e14;--surface:#141a24;--surface-2:#1a2230;--border:#1e2632;--border-2:#2a3544;--text:#e8edf5;--text-2:#94a3b8;--text-3:#64748b;--accent:#ea580c;--accent-2:#c2410c;--gold:#f59e0b;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--radius:10px;--radius-lg:16px;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);padding:20px;min-height:100vh;display:flex;justify-content:center}
+.app{max-width:1400px;width:100%}
+.header{display:flex;justify-content:space-between;align-items:center;padding:16px 0 24px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.logo{font-size:24px;font-weight:700;color:var(--gold);letter-spacing:-0.5px}
+.logo span{color:var(--accent)}
+.header-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.badge{background:var(--surface-2);padding:4px 14px;border-radius:20px;font-size:12px;color:var(--text-2);border:1px solid var(--border)}
+.tabs{display:flex;gap:4px;background:var(--surface);padding:4px;border-radius:12px;margin:24px 0;width:fit-content}
+.tab{padding:10px 28px;border:none;background:transparent;color:var(--text-2);border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:0.2s}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--surface-2);color:#fff}
+.panel{display:none;gap:24px;margin-top:20px}
+.panel.active{display:grid;grid-template-columns:1fr 1fr}
+@media(max-width:900px){.panel.active{grid-template-columns:1fr}}
+.card{background:var(--surface);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--border)}
+.card h3{font-size:16px;font-weight:600;margin-bottom:16px;color:#f1f5f9}
+.card label{display:block;font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:4px;margin-top:14px}
+.card label:first-of-type{margin-top:0}
+input,select,textarea{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border-2);border-radius:var(--radius);color:var(--text);font-size:14px;transition:0.2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(234,88,12,0.15)}
+textarea{min-height:80px;resize:vertical;font-family:inherit}
+select{cursor:pointer}
+.btn{padding:10px 20px;border:none;border-radius:var(--radius);font-weight:600;font-size:14px;cursor:pointer;transition:0.2s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-2);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-secondary{background:var(--surface-2);color:var(--text)}
+.btn-secondary:hover{background:var(--border-2)}
+.btn-success{background:var(--green);color:#fff}
+.btn-success:hover{background:#15803d}
+.btn-outline{background:transparent;border:1px solid var(--border-2);color:var(--text-2)}
+.btn-outline:hover{border-color:var(--accent);color:var(--text)}
+.btn-ghost{background:transparent;border:none;color:var(--text-3);cursor:pointer}
+.btn-ghost:hover{color:var(--red)}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:11px}
+.btn-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.upload-zone{border:2px dashed var(--border-2);border-radius:var(--radius);padding:28px;text-align:center;cursor:pointer;color:var(--text-3);font-size:13px;transition:0.2s;position:relative;margin-top:8px}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(234,88,12,0.05);color:var(--text)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-zone .icon{font-size:28px;margin-bottom:8px}
+.upload-zone .sub{font-size:11px;margin-top:6px;color:var(--text-3)}
+.upload-preview{margin-top:12px;border-radius:var(--radius);overflow:hidden;max-height:200px;display:none}
+.upload-preview img{width:100%;display:block}
+.preview-container{display:flex;flex-direction:column;align-items:center;gap:16px}
+.preview-container img{max-width:100%;border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,0.6);background:var(--bg)}
+.preview-placeholder{width:100%;aspect-ratio:2/3;max-width:400px;background:var(--bg);border-radius:var(--radius-lg);border:2px dashed var(--border-2);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:14px;text-align:center;padding:20px}
+.copy-box{background:var(--bg);padding:16px;border-radius:var(--radius);border:1px solid var(--border);margin-top:12px;font-size:13px;line-height:1.6;color:#cbd5e1;max-height:220px;overflow-y:auto;white-space:pre-wrap;cursor:text;user-select:text}
+.copy-box:focus{outline:none;border-color:var(--accent)}
+.copy-options{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.search-results{max-height:200px;overflow-y:auto;margin-top:8px}
+.search-result-item{padding:10px 14px;background:var(--bg);border-radius:var(--radius);margin-bottom:6px;cursor:pointer;border:1px solid transparent;transition:0.2s;display:flex;align-items:center;gap:10px}
+.search-result-item:hover{border-color:var(--accent)}
+.search-result-item img{width:36px;height:54px;object-fit:cover;border-radius:4px;background:var(--surface-2);flex-shrink:0}
+.search-result-item .info{flex:1;min-width:0}
+.search-result-item .info strong{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-result-item .info span{font-size:11px;color:var(--text-3)}
+.bulk-table-wrap{overflow-x:auto;margin-top:12px;max-height:420px;overflow-y:auto}
+.bulk-table{width:100%;border-collapse:collapse;font-size:13px}
+.bulk-table th{text-align:left;padding:10px 8px;background:var(--bg);color:var(--text-2);font-weight:600;position:sticky;top:0;z-index:2;border-bottom:2px solid var(--border)}
+.bulk-table td{padding:8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.bulk-table td input,.bulk-table td select{padding:6px 8px;font-size:12px;background:var(--bg)}
+.bulk-table .status-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.bulk-table .status-dot.pending{background:var(--text-3)}
+.bulk-table .status-dot.resolved{background:var(--green)}
+.bulk-table .status-dot.error{background:var(--red)}
+.bulk-table .status-dot.generated{background:var(--gold)}
+.bulk-table .status-dot.generating{background:var(--blue);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.bulk-table .actions{display:flex;gap:4px}
+.progress-bar{width:100%;height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:12px}
+.progress-bar .fill{height:100%;background:var(--accent);width:0%;transition:width 0.3s}
+.progress-text{font-size:13px;color:var(--text-2);margin-top:4px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface-2);color:var(--text);padding:14px 24px;border-radius:var(--radius-lg);border-left:4px solid var(--green);box-shadow:0 8px 24px rgba(0,0,0,0.5);font-size:14px;transform:translateY(140%);transition:transform 0.3s ease;z-index:999;max-width:400px;line-height:1.5}
+.toast.show{transform:translateY(0)}
+.toast.error{border-left-color:var(--red)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);padding:32px;border-radius:var(--radius-lg);max-width:480px;width:90%;border:1px solid var(--border-2)}
+.modal h2{margin-bottom:16px;font-size:20px}
+.modal .btn-group{margin-top:20px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.flex{display:flex;gap:8px;align-items:center}
+.mt-8{margin-top:8px}
+.mt-12{margin-top:12px}
+.mt-16{margin-top:16px}
+.text-muted{color:var(--text-2);font-size:13px}
+.text-center{text-align:center}
+.w-full{width:100%}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+</style>
 </head>
 <body>
-
-    <div class="app">
-
-        <!-- ─── HEADER ─── -->
-        <header class="header">
-            <div class="logo">Flix<span>Bridge</span> <span style="font-size:14px;color:#94a3b8;font-weight:400;">Pin Factory v2</span></div>
-            <div class="header-actions">
-                <span class="badge">⚡ Bulk Ready</span>
-                <button class="btn btn-secondary btn-sm" onclick="openSettings()">⚙️ Settings</button>
-            </div>
-        </header>
-
-        <!-- ─── TABS ─── -->
-        <div class="tabs">
-            <button class="tab active" data-tab="single">🎬 Single Pin</button>
-            <button class="tab" data-tab="bulk">📦 Bulk Generator</button>
-        </div>
-
-        <!-- ════════════════════════════════════════════════════ -->
-        <!-- ─── PANEL: SINGLE ─── -->
-        <!-- ════════════════════════════════════════════════════ -->
-        <div class="panel active" id="panel-single">
-
-            <!-- LEFT: Inputs -->
-            <div class="card">
-                <h3>🎯 Movie &amp; Copy</h3>
-
-                <label>Movie Title</label>
-                <div class="flex" style="gap:8px;">
-                    <input type="text" id="single-title" placeholder="e.g. Inception" />
-                    <button class="btn btn-primary btn-sm" id="single-search-btn" style="white-space:nowrap;">🔍 Search</button>
-                </div>
-                <div id="single-search-results" class="mt-8" style="max-height:160px;overflow-y:auto;"></div>
-
-                <label>Template Variant</label>
-                <select id="single-template">
-                    <option value="whereToWatch">Where to Watch</option>
-                    <option value="comingSoon">Coming Soon</option>
-                    <option value="nowStreaming">Now Streaming</option>
-                    <option value="leavingSoon">⚠️ Leaving Soon</option>
-                </select>
-
-                <label>Title Variant</label>
-                <select id="single-title-variant">
-                    <option value="0">Variant A</option>
-                    <option value="1">Variant B</option>
-                    <option value="2">Variant C</option>
-                </select>
-
-                <div class="row mt-8">
-                    <div>
-                        <label>Year</label>
-                        <input type="text" id="single-year" />
-                    </div>
-                    <div>
-                        <label>Genre</label>
-                        <input type="text" id="single-genre" />
-                    </div>
-                </div>
-
-                <label>Synopsis (for description)</label>
-                <textarea id="single-synopsis" rows="2"></textarea>
-
-                <label>Generated Copy</label>
-                <div class="copy-box" id="single-copy-preview">Search for a movie to generate copy.</div>
-                <div class="copy-options">
-                    <button class="btn btn-secondary btn-sm" onclick="copySingleText()">📋 Copy Text</button>
-                    <button class="btn btn-secondary btn-sm" onclick="regenerateSingleCopy()">🔄 Regenerate</button>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="single-generate-btn" onclick="generateSinglePin()">🎨 Generate Pin</button>
-                </div>
-            </div>
-
-            <!-- RIGHT: Preview -->
-            <div class="card">
-                <h3>🖼️ Preview</h3>
-                <div class="preview-container">
-                    <div id="single-preview-area">
-                        <div class="preview-placeholder">Generate a pin to see preview</div>
-                    </div>
-                    <div class="btn-group" id="single-output-buttons" style="display:none;">
-                        <button class="btn btn-success" onclick="downloadSinglePNG()">⬇️ Download PNG</button>
-                        <button class="btn btn-secondary" onclick="copySingleText()">📋 Copy Text</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- ════════════════════════════════════════════════════ -->
-        <!-- ─── PANEL: BULK ─── -->
-        <!-- ════════════════════════════════════════════════════ -->
-        <div class="panel" id="panel-bulk">
-
-            <!-- LEFT: Bulk Input -->
-            <div class="card">
-                <h3>📦 Bulk Import</h3>
-                <label>Paste movie titles (one per line or comma-separated)</label>
-                <textarea id="bulk-input" rows="6" placeholder="Inception&#10;The Dark Knight&#10;Interstellar&#10;The Prestige&#10;Memento"></textarea>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="resolveBulk()">🔍 Resolve All</button>
-                    <button class="btn btn-secondary" onclick="clearBulk()">🗑️ Clear</button>
-                </div>
-
-                <label class="mt-16">Bulk Template Variant</label>
-                <select id="bulk-template-select">
-                    <option value="whereToWatch">Where to Watch</option>
-                    <option value="comingSoon">Coming Soon</option>
-                    <option value="nowStreaming">Now Streaming</option>
-                    <option value="leavingSoon">⚠️ Leaving Soon</option>
-                </select>
-
-                <div class="btn-group">
-                    <button class="btn btn-success" onclick="generateBulk()">⚡ Generate All</button>
-                    <button class="btn btn-secondary" onclick="downloadBulkZIP()">📦 Download ZIP</button>
-                </div>
-
-                <div class="progress-bar"><div class="fill" id="bulk-progress-fill"></div></div>
-                <div class="progress-text" id="bulk-progress-text">Ready</div>
-            </div>
-
-            <!-- RIGHT: Bulk Table -->
-            <div class="card">
-                <h3>📋 Queue <span id="bulk-count" class="text-muted">(0 items)</span></h3>
-                <div class="bulk-table-wrap" id="bulk-table-wrap">
-                    <table class="bulk-table">
-                        <thead>
-                            <tr>
-                                <th style="width:24px;">#</th>
-                                <th>Title</th>
-                                <th style="width:80px;">Year</th>
-                                <th style="width:100px;">Template</th>
-                                <th style="width:60px;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bulk-table-body">
-                            <tr><td colspan="5" class="text-center text-muted" style="padding:30px;">Add movies to get started</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- ─── TOAST ─── -->
-        <div class="toast" id="toast"></div>
-
-        <!-- ─── SETTINGS MODAL ─── -->
-        <div class="modal-overlay" id="settings-modal">
-            <div class="modal">
-                <h2>⚙️ Settings</h2>
-                <label>TMDB API Key</label>
-                <input type="text" id="settings-tmdb-key" placeholder="Enter your TMDB API key" />
-                <p class="text-muted mt-8" style="font-size:12px;">Get a free key at <a href="https://www.themoviedb.org/signup" target="_blank" style="color:#ea580c;">themoviedb.org</a></p>
-                <label class="mt-12">Default Board Name (for CSV)</label>
-                <input type="text" id="settings-board" placeholder="Movie Streaming Guides" />
-                <label class="mt-12">UTM Source</label>
-                <input type="text" id="settings-utm-source" value="pinterest" />
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="saveSettings()">💾 Save</button>
-                    <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
-    </script>
-    <script>
-        // ═══════════════════════════════════════════════════════════════
-        //  STATE
-        // ═══════════════════════════════════════════════════════════════
-
-        const state = {
-            // Single mode
-            singleMovie: null, // { id, title, year, genre, director, cast, synopsis, poster_path }
-            singleCopy: null, // { title, description, hashtags }
-            singleCanvasData: null, // dataURL
-            singleTemplate: 'whereToWatch',
-
-            // Bulk mode
-            bulkItems: [], // [{ id, title, year, genre, synopsis, poster_path, template, status, generatedDataURL }]
-            bulkGenerated: false,
-
-            // Settings (persisted in localStorage)
-            settings: {
-                tmdbKey: '',
-                boardName: 'Movie Streaming Guides',
-                utmSource: 'pinterest',
-            },
-
-            // Copy templates
-            copyTemplates: {
-                whereToWatch: {
-                    titles: [
-                        "Where to Watch {{title}} ({{year}}) — Streaming Guide 🎬",
-                        "{{title}} ({{year}}): Where to Stream It Right Now 🍿",
-                        "Your Guide to Watching {{title}} in {{currentYear}} 📺"
-                    ],
-                    descriptions: [
-                        "{{director}}'s {{genre}} masterpiece is a must-watch.\n\n{{castSnippet}} star in this {{genre}} film that will keep you on the edge of your seat.\n\nFind exactly where to stream {{title}} in {{currentYear}}. No spoilers, no clickbait — just the facts.",
-                        "Looking for {{title}}? We've got you covered.\n\n{{synopsisSnippet}}\n\nSave this pin for your next movie night! 🍿"
-                    ],
-                    hashtagGenres: {
-                        "Sci-Fi": ["#SciFiMovies", "#SpaceMovies", "#SciFiFilm"],
-                        "Action": ["#ActionMovies", "#Blockbuster", "#ActionFilm"],
-                        "Drama": ["#DramaMovies", "#OscarWorthy", "#MovieDrama"],
-                        "Comedy": ["#ComedyMovies", "#FunnyFilms", "#ComedyFilm"],
-                        "Horror": ["#HorrorMovies", "#ScaryMovies", "#HorrorFilm"],
-                        "Thriller": ["#ThrillerMovies", "#Suspense", "#ThrillerFilm"],
-                        "Romance": ["#RomanceMovies", "#LoveStory", "#RomCom"],
-                        "Adventure": ["#AdventureMovies", "#EpicFilm", "#AdventureFilm"],
-                        "Animation": ["#AnimationMovies", "#AnimatedFilm", "#FamilyMovies"],
-                        "Documentary": ["#DocumentaryMovies", "#TrueStory", "#DocFilm"]
-                    }
-                },
-                comingSoon: {
-                    titles: [
-                        "{{title}} — Coming to Streaming Soon 🎬",
-                        "Get Ready: {{title}} Hits Streaming Soon 📅",
-                        "{{title}} ({{year}}): Coming Soon to a Platform Near You"
-                    ],
-                    descriptions: [
-                        "{{title}} is coming to streaming soon! 🎉\n\n{{synopsisSnippet}}\n\nFollow for updates on exactly where to watch {{title}} when it drops.",
-                        "Mark your calendars! {{title}} is arriving on streaming soon.\n\n{{director}}'s {{genre}} film stars {{castSnippet}}.\n\nSave this pin to get notified when it's available."
-                    ],
-                    hashtagGenres: {} // same as above
-                },
-                nowStreaming: {
-                    titles: [
-                        "{{title}} — Now Streaming! 🎉",
-                        "{{title}} ({{year}}) Is Now Streaming — Watch Today 🍿",
-                        "Just Dropped: {{title}} Is Available to Stream Now"
-                    ],
-                    descriptions: [
-                        "{{title}} is NOW STREAMING! 🔥\n\n{{synopsisSnippet}}\n\nFind out exactly where to watch {{title}} right now. Don't wait — start your movie night!",
-                        "{{director}}'s {{genre}} film is finally here.\n\n{{castSnippet}} deliver {{reaction}} performances.\n\nClick through to find where to stream {{title}} today."
-                    ],
-                    hashtagGenres: {}
-                },
-                leavingSoon: {
-                    titles: [
-                        "⚠️ Leaving Soon: {{title}} — Last Chance to Watch!",
-                        "{{title}} ({{year}}) — Leaving Streaming This Month ⚠️",
-                        "Don't Miss It: {{title}} Is Leaving Soon 🚨"
-                    ],
-                    descriptions: [
-                        "{{title}} is leaving streaming soon! ⚠️\n\n{{synopsisSnippet}}\n\nDon't miss your chance to watch {{director}}'s {{genre}} masterpiece before it's gone.\n\nFind out where to watch {{title}} right now.",
-                        "Last chance to stream {{title}}! 🚨\n\n{{castSnippet}} star in this must-watch {{genre}} film.\n\nClick through to see where {{title}} is still available."
-                    ],
-                    hashtagGenres: {}
-                }
-            }
-        };
-
-        // ═══════════════════════════════════════════════════════════════
-        //  INIT
-        // ═══════════════════════════════════════════════════════════════
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSettings();
-
-            // Tab switching
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
-                });
-            });
-
-            // Search on Enter
-            document.getElementById('single-title').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') searchSingleMovie();
-            });
-
-            // Template change -> regenerate preview
-            document.getElementById('single-template').addEventListener('change', () => {
-                if (state.singleMovie) generateSingleCopy();
-            });
-
-            // Title variant change -> update copy preview
-            document.getElementById('single-title-variant').addEventListener('change', () => {
-                if (state.singleMovie) generateSingleCopy();
-            });
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  SETTINGS
-        // ═══════════════════════════════════════════════════════════════
-
-        function loadSettings() {
-            try {
-                const saved = localStorage.getItem('flixbridge_pin_factory_settings');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    Object.assign(state.settings, parsed);
-                }
-            } catch (_) {}
-            document.getElementById('settings-tmdb-key').value = state.settings.tmdbKey || '';
-            document.getElementById('settings-board').value = state.settings.boardName || 'Movie Streaming Guides';
-            document.getElementById('settings-utm-source').value = state.settings.utmSource || 'pinterest';
-        }
-
-        function saveSettings() {
-            state.settings.tmdbKey = document.getElementById('settings-tmdb-key').value.trim();
-            state.settings.boardName = document.getElementById('settings-board').value.trim() || 'Movie Streaming Guides';
-            state.settings.utmSource = document.getElementById('settings-utm-source').value.trim() || 'pinterest';
-            localStorage.setItem('flixbridge_pin_factory_settings', JSON.stringify(state.settings));
-            closeSettings();
-            showToast('✅ Settings saved!');
-        }
-
-        function openSettings() {
-            document.getElementById('settings-modal').classList.add('open');
-            document.getElementById('settings-tmdb-key').value = state.settings.tmdbKey || '';
-            document.getElementById('settings-board').value = state.settings.boardName || 'Movie Streaming Guides';
-            document.getElementById('settings-utm-source').value = state.settings.utmSource || 'pinterest';
-        }
-
-        function closeSettings() {
-            document.getElementById('settings-modal').classList.remove('open');
-        }
-
-        // ─── API Key helpers ───
-        function getTMDBKey() {
-            if (!state.settings.tmdbKey) {
-                showToast('⚠️ Please set your TMDB API key in Settings (gear icon)', true);
-                openSettings();
-                return null;
-            }
-            return state.settings.tmdbKey;
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  TOAST
-        // ═══════════════════════════════════════════════════════════════
-
-        let toastTimeout;
-
-        function showToast(msg, isError = false) {
-            const el = document.getElementById('toast');
-            el.textContent = msg;
-            el.className = 'toast';
-            if (isError) el.classList.add('error');
-            clearTimeout(toastTimeout);
-            // Force reflow
-            void el.offsetWidth;
-            el.classList.add('show');
-            toastTimeout = setTimeout(() => el.classList.remove('show'), 4000);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  SINGLE MODE — TMDB Search
-        // ═══════════════════════════════════════════════════════════════
-
-        let singleSearchResults = [];
-
-        async function searchSingleMovie() {
-            const key = getTMDBKey();
-            if (!key) return;
-
-            const title = document.getElementById('single-title').value.trim();
-            if (!title) { showToast('Please enter a movie title', true); return; }
-
-            const btn = document.getElementById('single-search-btn');
-            btn.disabled = true;
-            btn.textContent = '⏳ Searching...';
-
-            try {
-                const url =
-                    `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${encodeURIComponent(title)}&language=en-US&page=1`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('TMDB API error: ' + res.status);
-                const data = await res.json();
-                singleSearchResults = data.results || [];
-                renderSearchResults(singleSearchResults);
-                if (singleSearchResults.length === 0) {
-                    showToast('No movies found. Try a different title.', true);
-                }
-            } catch (err) {
-                showToast('❌ Search failed: ' + err.message, true);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '🔍 Search';
-            }
-        }
-
-        function renderSearchResults(results) {
-            const container = document.getElementById('single-search-results');
-            if (!results || results.length === 0) {
-                container.innerHTML = '<p class="text-muted">No results</p>';
-                return;
-            }
-            container.innerHTML = results.map((m, i) =>
-                `<div style="padding:8px 12px;background:#0b0e14;border-radius:6px;margin-bottom:4px;cursor:pointer;border:1px solid transparent;transition:0.2s;"
-                      onmouseover="this.style.borderColor='#ea580c'" onmouseout="this.style.borderColor='transparent'"
-                      onclick="selectSingleMovie(${i})">
-                    <strong>${m.title}</strong> ${m.release_date ? ' (' + m.release_date.slice(0,4) + ')' : ''}
-                    <span style="color:#64748b;font-size:12px;">${m.vote_average ? '⭐ ' + m.vote_average.toFixed(1) : ''}</span>
-                  </div>`
-            ).join('');
-        }
-
-        async function selectSingleMovie(index) {
-            const movie = singleSearchResults[index];
-            if (!movie) return;
-
-            // Fetch full details for cast/genre
-            const key = getTMDBKey();
-            let details = movie;
-            try {
-                const url =
-                    `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${key}&language=en-US&append_to_response=credits`;
-                const res = await fetch(url);
-                if (res.ok) {
-                    const d = await res.json();
-                    details = d;
-                }
-            } catch (_) {}
-
-            const genre = details.genres && details.genres.length > 0 ? details.genres[0].name : 'Film';
-            const cast = details.credits && details.credits.cast ?
-                details.credits.cast.slice(0, 4).map(c => c.name) :
-                [];
-
-            state.singleMovie = {
-                id: details.id,
-                title: details.title,
-                year: details.release_date ? details.release_date.slice(0, 4) : '',
-                genre: genre,
-                director: (details.credits && details.credits.crew) ?
-                    details.credits.crew.filter(c => c.job === 'Director').map(c => c.name)[0] || 'a visionary director' :
-                    'a visionary director',
-                cast: cast,
-                synopsis: details.overview || '',
-                poster_path: details.poster_path || '',
-            };
-
-            // Fill inputs
-            document.getElementById('single-year').value = state.singleMovie.year;
-            document.getElementById('single-genre').value = state.singleMovie.genre;
-            document.getElementById('single-synopsis').value = state.singleMovie.synopsis;
-
-            // Generate copy
-            generateSingleCopy();
-
-            // Clear search results
-            document.getElementById('single-search-results').innerHTML =
-                `<div style="padding:8px;color:#22c55e;">✅ Selected: <strong>${state.singleMovie.title}</strong></div>`;
-
-            showToast(`✅ Loaded: ${state.singleMovie.title}`);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  COPY GENERATOR
-        // ═══════════════════════════════════════════════════════════════
-
-        function generateSingleCopy() {
-            const movie = state.singleMovie;
-            if (!movie) {
-                document.getElementById('single-copy-preview').textContent = 'Search for a movie to generate copy.';
-                return;
-            }
-
-            const templateKey = document.getElementById('single-template').value;
-            const variantIdx = parseInt(document.getElementById('single-title-variant').value) || 0;
-
-            const templates = state.copyTemplates[templateKey] || state.copyTemplates.whereToWatch;
-
-            // Build variables
-            const vars = {
-                title: movie.title,
-                year: movie.year || '2026',
-                currentYear: new Date().getFullYear(),
-                genre: movie.genre || 'film',
-                director: movie.director || 'a visionary director',
-                castSnippet: movie.cast && movie.cast.length > 0 ?
-                    movie.cast.slice(0, 3).join(', ') :
-                    'a talented cast',
-                synopsisSnippet: movie.synopsis ?
-                    movie.synopsis.slice(0, 150) + (movie.synopsis.length > 150 ? '...' : '') :
-                    'An unforgettable cinematic experience.',
-                reaction: 'unforgettable',
-                titleSlug: movie.title.toLowerCase().replace(/\s+/g, ''),
-                directorSlug: (movie.director || 'film').toLowerCase().replace(/\s+/g, ''),
-                leadActorSlug: movie.cast && movie.cast.length > 0 ?
-                    movie.cast[0].toLowerCase().replace(/\s+/g, '') :
-                    'movie',
-            };
-
-            // Pick title variant
-            const titleOptions = templates.titles || state.copyTemplates.whereToWatch.titles;
-            const title = fillTemplate(titleOptions[variantIdx % titleOptions.length] || titleOptions[0], vars);
-
-            // Pick description (use first one for now)
-            const descOptions = templates.descriptions || state.copyTemplates.whereToWatch.descriptions;
-            const description = fillTemplate(descOptions[0] || descOptions[1] || descOptions[0], vars);
-
-            // Build hashtags
-            const hashtags = buildHashtags(movie, templateKey);
-
-            state.singleCopy = { title, description, hashtags };
-
-            // Render preview
-            const preview = document.getElementById('single-copy-preview');
-            preview.innerHTML = `
-                <strong>📌 ${title}</strong>
-                <br><br>
-                ${description.replace(/\n/g, '<br>')}
-                <br><br>
-                <span style="color:#f59e0b;">${hashtags.join(' ')}</span>
-            `;
-        }
-
-        function buildHashtags(movie, templateKey) {
-            const tags = [];
-            const baseTags = ['#WhereToWatch', '#StreamingGuide', '#MovieNight'];
-
-            // Movie title
-            if (movie.title) {
-                const slug = movie.title.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (slug) tags.push('#' + slug);
-            }
-
-            // Director
-            if (movie.director && movie.director !== 'a visionary director') {
-                const slug = movie.director.toLowerCase().replace(/\s+/g, '');
-                if (slug) tags.push('#' + slug);
-            }
-
-            // Genre-based
-            const genreMap = state.copyTemplates.whereToWatch.hashtagGenres || {};
-            const genreKey = Object.keys(genreMap).find(g =>
-                movie.genre && movie.genre.toLowerCase().includes(g.toLowerCase())
-            );
-            if (genreKey && genreMap[genreKey]) {
-                tags.push(...genreMap[genreKey].slice(0, 2));
-            }
-
-            // Template-specific
-            if (templateKey === 'leavingSoon') {
-                tags.push('#LeavingSoon', '#LastChance', '#StreamingAlert');
-            } else if (templateKey === 'comingSoon') {
-                tags.push('#ComingSoon', '#NewOnStreaming');
-            } else if (templateKey === 'nowStreaming') {
-                tags.push('#NowStreaming', '#WatchNow');
-            }
-
-            // Ensure we have enough, deduplicate, limit to 12
-            const all = [...baseTags, ...tags];
-            const unique = [];
-            const seen = new Set();
-            for (const t of all) {
-                const clean = t.trim();
-                if (clean && !seen.has(clean)) {
-                    seen.add(clean);
-                    unique.push(clean);
-                }
-            }
-            return unique.slice(0, 12);
-        }
-
-        function fillTemplate(template, vars) {
-            let result = template;
-            for (const [key, val] of Object.entries(vars)) {
-                result = result.replace(new RegExp('{{' + key + '}}', 'g'), val || '');
-            }
-            return result;
-        }
-
-        function regenerateSingleCopy() {
-            if (state.singleMovie) generateSingleCopy();
-        }
-
-        function copySingleText() {
-            const copy = state.singleCopy;
-            if (!copy) { showToast('Generate copy first!', true); return; }
-            const text = `${copy.title}\n\n${copy.description}\n\n${copy.hashtags.join(' ')}`;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('✅ Copy copied to clipboard!');
-            }).catch(() => {
-                // Fallback
-                const area = document.createElement('textarea');
-                area.value = text;
-                document.body.appendChild(area);
-                area.select();
-                document.execCommand('copy');
-                area.remove();
-                showToast('✅ Copy copied to clipboard!');
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  SINGLE MODE — PIN GENERATION (Canvas)
-        // ═══════════════════════════════════════════════════════════════
-
-        function generateSinglePin() {
-            const movie = state.singleMovie;
-            if (!movie) { showToast('Search and select a movie first!', true); return; }
-
-            const copy = state.singleCopy;
-            if (!copy) { generateSingleCopy(); }
-
-            const templateKey = document.getElementById('single-template').value;
-
-            // Build data for canvas
-            const data = {
-                title: movie.title,
-                year: movie.year || '',
-                genre: movie.genre || '',
-                posterPath: movie.poster_path,
-                template: templateKey,
-                copyTitle: copy ? copy.title : movie.title,
-            };
-
-            renderPinCanvas(data, (dataURL) => {
-                state.singleCanvasData = dataURL;
-                document.getElementById('single-preview-area').innerHTML =
-                    `<img src="${dataURL}" style="max-width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);" />`;
-                document.getElementById('single-output-buttons').style.display = 'flex';
-                showToast('✅ Pin generated!');
-            });
-        }
-
-        function renderPinCanvas(data, callback) {
-            const canvas = document.createElement('canvas');
-            const W = 1000,
-                H = 1500;
-            canvas.width = W;
-            canvas.height = H;
-            const ctx = canvas.getContext('2d');
-
-            // ── Background ──
-            const gradients = [
-                ['#0a0f1a', '#1a1a2e'],
-                ['#0a0f1a', '#1e1a2e'],
-                ['#0a0f1a', '#1e2a2e'],
-                ['#0a0f1a', '#2e1a1a'],
-                ['#0a0f1a', '#1a1a1a'],
-            ];
-            const gIdx = Math.floor(Math.random() * gradients.length);
-            const [c1, c2] = gradients[gIdx];
-            const grad = ctx.createLinearGradient(0, 0, 0, H);
-            grad.addColorStop(0, c1);
-            grad.addColorStop(1, c2);
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, W, H);
-
-            // ── Subtle pattern overlay ──
-            ctx.fillStyle = 'rgba(255,255,255,0.02)';
-            for (let i = 0; i < 30; i++) {
-                const x = Math.random() * W;
-                const y = Math.random() * H;
-                const r = 2 + Math.random() * 6;
-                ctx.beginPath();
-                ctx.arc(x, y, r, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // ── Top badge (template-specific) ──
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-
-            let badgeText = '📺 WHERE TO WATCH';
-            if (data.template === 'comingSoon') badgeText = '📅 COMING SOON';
-            else if (data.template === 'nowStreaming') badgeText = '🎉 NOW STREAMING';
-            else if (data.template === 'leavingSoon') badgeText = '⚠️ LEAVING SOON';
-
-            ctx.font = 'bold 36px system-ui, sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.12)';
-            ctx.fillText(badgeText, W / 2, 40);
-
-            // ── Poster ──
-            const posterW = 400,
-                posterH = 600;
-            const posterX = (W - posterW) / 2,
-                posterY = 180;
-
-            // Poster shadow
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 40;
-            ctx.shadowOffsetY = 8;
-            ctx.fillStyle = '#1a1a2a';
-            ctx.fillRect(posterX - 4, posterY - 4, posterW + 8, posterH + 8);
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetY = 0;
-
-            // Poster placeholder
-            ctx.fillStyle = '#2a2f3a';
-            ctx.fillRect(posterX, posterY, posterW, posterH);
-
-            if (data.posterPath) {
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = () => {
-                    ctx.drawImage(img, posterX, posterY, posterW, posterH);
-                    drawTextOverlay(ctx, W, H, data);
-                    if (callback) callback(canvas.toDataURL('image/png'));
-                };
-                img.onerror = () => {
-                    // Draw placeholder text
-                    ctx.fillStyle = '#475569';
-                    ctx.font = '24px system-ui, sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('🎬', posterX + posterW / 2, posterY + posterH / 2 - 20);
-                    ctx.font = '18px system-ui, sans-serif';
-                    ctx.fillText(data.title || 'Movie Poster', posterX + posterW / 2, posterY + posterH / 2 + 30);
-                    drawTextOverlay(ctx, W, H, data);
-                    if (callback) callback(canvas.toDataURL('image/png'));
-                };
-                img.src = `https://image.tmdb.org/t/p/w500${data.posterPath}`;
-            } else {
-                // No poster
-                ctx.fillStyle = '#475569';
-                ctx.font = '24px system-ui, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('🎬', posterX + posterW / 2, posterY + posterH / 2 - 20);
-                ctx.font = '18px system-ui, sans-serif';
-                ctx.fillText(data.title || 'Movie Poster', posterX + posterW / 2, posterY + posterH / 2 + 30);
-                drawTextOverlay(ctx, W, H, data);
-                if (callback) callback(canvas.toDataURL('image/png'));
-            }
-        }
-
-        function drawTextOverlay(ctx, W, H, data) {
-            // ── Title ──
-            const titleY = 820;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-
-            // Title shadow
-            ctx.shadowColor = 'rgba(0,0,0,0.8)';
-            ctx.shadowBlur = 20;
-            ctx.shadowOffsetY = 4;
-
-            const titleText = data.title || 'Movie Title';
-            const fontSize = titleText.length > 20 ? 52 : 60;
-            ctx.font = `bold ${fontSize}px system-ui, sans-serif`;
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillText(titleText, W / 2, titleY);
-
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetY = 0;
-
-            // ── Year ──
-            if (data.year) {
-                ctx.font = '28px system-ui, sans-serif';
-                ctx.fillStyle = 'rgba(255,255,255,0.6)';
-                ctx.fillText(data.year, W / 2, titleY + fontSize + 20);
-            }
-
-            // ── CTA Button ──
-            const ctaPositions = ['bottom-center', 'bottom-left', 'bottom-right'];
-            const pos = ctaPositions[Math.floor(Math.random() * ctaPositions.length)];
-
-            const btnW = 440,
-                btnH = 64;
-            let btnX, btnY = H - 120;
-
-            if (pos === 'bottom-left') btnX = 60;
-            else if (pos === 'bottom-right') btnX = W - btnW - 60;
-            else btnX = (W - btnW) / 2;
-
-            // Button shadow
-            ctx.shadowColor = 'rgba(234,88,12,0.3)';
-            ctx.shadowBlur = 30;
-            ctx.shadowOffsetY = 4;
-
-            // Button gradient
-            const grad = ctx.createLinearGradient(btnX, btnY, btnX + btnW, btnY + btnH);
-            grad.addColorStop(0, '#ea580c');
-            grad.addColorStop(1, '#c2410c');
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.roundRect(btnX, btnY, btnW, btnH, 12);
-            ctx.fill();
-
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetY = 0;
-
-            // Button text
-            let ctaText = 'Find Where to Watch →';
-            if (data.template === 'comingSoon') ctaText = 'Coming Soon →';
-            else if (data.template === 'nowStreaming') ctaText = 'Watch Now →';
-            else if (data.template === 'leavingSoon') ctaText = 'Watch Before It\'s Gone →';
-
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.font = 'bold 26px system-ui, sans-serif';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(ctaText, btnX + btnW / 2, btnY + btnH / 2);
-
-            // ── Logo / Brand ──
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'bottom';
-            ctx.font = '18px system-ui, sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.fillText('FlixBridge', W - 40, H - 20);
-
-            // ── TMDB Disclaimer (tiny) ──
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'bottom';
-            ctx.font = '10px system-ui, sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.08)';
-            ctx.fillText('Data from TMDB - Not endorsed or certified by TMDB', 20, H - 10);
-        }
-
-        // ── roundRect polyfill for canvas ──
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-                if (r > w / 2) r = w / 2;
-                if (r > h / 2) r = h / 2;
-                this.moveTo(x + r, y);
-                this.arcTo(x + w, y, x + w, y + h, r);
-                this.arcTo(x + w, y + h, x, y + h, r);
-                this.arcTo(x, y + h, x, y, r);
-                this.arcTo(x, y, x + w, y, r);
-                return this;
-            };
-        }
-
-        function downloadSinglePNG() {
-            if (!state.singleCanvasData) { showToast('Generate a pin first!', true); return; }
-            const a = document.createElement('a');
-            const movie = state.singleMovie;
-            const slug = movie ? movie.title.toLowerCase().replace(/\s+/g, '-') : 'pin';
-            a.download = `${slug}-pinterest-pin.png`;
-            a.href = state.singleCanvasData;
-            a.click();
-            showToast('⬇️ Downloading...');
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  BULK MODE
-        // ═══════════════════════════════════════════════════════════════
-
-        async function resolveBulk() {
-            const key = getTMDBKey();
-            if (!key) return;
-
-            const raw = document.getElementById('bulk-input').value.trim();
-            if (!raw) { showToast('Paste some movie titles first!', true); return; }
-
-            // Parse titles
-            const titles = raw.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
-            if (titles.length === 0) { showToast('No valid titles found', true); return; }
-
-            state.bulkItems = [];
-            showToast(`🔍 Resolving ${titles.length} movies...`);
-
-            for (let i = 0; i < titles.length; i++) {
-                const title = titles[i];
-                try {
-                    const url =
-                        `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${encodeURIComponent(title)}&language=en-US&page=1`;
-                    const res = await fetch(url);
-                    if (!res.ok) throw new Error('TMDB error');
-                    const data = await res.json();
-                    const movie = data.results && data.results[0];
-
-                    if (movie) {
-                        state.bulkItems.push({
-                            id: movie.id,
-                            title: movie.title,
-                            year: movie.release_date ? movie.release_date.slice(0, 4) : '',
-                            genre: 'Film',
-                            synopsis: movie.overview || '',
-                            poster_path: movie.poster_path || '',
-                            template: document.getElementById('bulk-template-select').value || 'whereToWatch',
-                            status: 'resolved',
-                            generatedDataURL: null,
-                        });
-                    } else {
-                        state.bulkItems.push({
-                            id: null,
-                            title: title,
-                            year: '',
-                            genre: '',
-                            synopsis: '',
-                            poster_path: '',
-                            template: document.getElementById('bulk-template-select').value || 'whereToWatch',
-                            status: 'error',
-                            generatedDataURL: null,
-                        });
-                    }
-                } catch (_) {
-                    state.bulkItems.push({
-                        id: null,
-                        title: title,
-                        year: '',
-                        genre: '',
-                        synopsis: '',
-                        poster_path: '',
-                        template: document.getElementById('bulk-template-select').value || 'whereToWatch',
-                        status: 'error',
-                        generatedDataURL: null,
-                    });
-                }
-                renderBulkTable();
-            }
-
-            showToast(`✅ Resolved ${state.bulkItems.filter(i => i.status === 'resolved').length}/${titles.length} movies`);
-            renderBulkTable();
-        }
-
-        function renderBulkTable() {
-            const tbody = document.getElementById('bulk-table-body');
-            const items = state.bulkItems;
-
-            if (items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:30px;">Add movies to get started</td></tr>`;
-                document.getElementById('bulk-count').textContent = '(0 items)';
-                return;
-            }
-
-            document.getElementById('bulk-count').textContent = `(${items.length} items)`;
-
-            tbody.innerHTML = items.map((item, idx) => {
-                const statusDot = item.status === 'pending' ? 'pending' :
-                    item.status === 'resolved' ? 'resolved' :
-                    item.status === 'generated' ? 'generated' : 'error';
-                const statusLabel = item.status === 'pending' ? '⏳' :
-                    item.status === 'resolved' ? '✅' :
-                    item.status === 'generated' ? '🎨' : '❌';
-
-                return `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td>
-                            <input type="text" value="${item.title}" 
-                                   onchange="updateBulkItem(${idx}, 'title', this.value)" 
-                                   style="background:transparent;border:none;color:#e8edf5;padding:4px;width:100%;" />
-                        </td>
-                        <td>
-                            <input type="text" value="${item.year}" 
-                                   onchange="updateBulkItem(${idx}, 'year', this.value)" 
-                                   style="width:70px;background:transparent;border:none;color:#e8edf5;padding:4px;" />
-                        </td>
-                        <td>
-                            <select onchange="updateBulkItem(${idx}, 'template', this.value)" style="width:100%;padding:4px;font-size:11px;">
-                                <option value="whereToWatch" ${item.template === 'whereToWatch' ? 'selected' : ''}>Where to Watch</option>
-                                <option value="comingSoon" ${item.template === 'comingSoon' ? 'selected' : ''}>Coming Soon</option>
-                                <option value="nowStreaming" ${item.template === 'nowStreaming' ? 'selected' : ''}>Now Streaming</option>
-                                <option value="leavingSoon" ${item.template === 'leavingSoon' ? 'selected' : ''}>⚠️ Leaving Soon</option>
-                            </select>
-                        </td>
-                        <td><span class="status-dot ${statusDot}" title="${item.status}"></span> ${statusLabel}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function updateBulkItem(idx, field, value) {
-            if (state.bulkItems[idx]) {
-                state.bulkItems[idx][field] = value;
-                if (field === 'title') {
-                    state.bulkItems[idx].status = 'pending';
-                }
-                renderBulkTable();
-            }
-        }
-
-        function clearBulk() {
-            state.bulkItems = [];
-            document.getElementById('bulk-input').value = '';
-            renderBulkTable();
-            document.getElementById('bulk-progress-fill').style.width = '0%';
-            document.getElementById('bulk-progress-text').textContent = 'Ready';
-        }
-
-        // ─── Generate Bulk ───
-
-        async function generateBulk() {
-            const items = state.bulkItems.filter(i => i.status === 'resolved' || i.status === 'generated');
-            if (items.length === 0) {
-                showToast('Resolve some movies first!', true);
-                return;
-            }
-
-            const total = items.length;
-            let completed = 0;
-
-            document.getElementById('bulk-progress-text').textContent = `Generating ${total} pins...`;
-
-            for (let i = 0; i < state.bulkItems.length; i++) {
-                const item = state.bulkItems[i];
-                if (item.status === 'error' || !item.id) continue;
-
-                // Generate canvas for this item
-                const data = {
-                    title: item.title,
-                    year: item.year || '',
-                    genre: item.genre || '',
-                    posterPath: item.poster_path,
-                    template: item.template || 'whereToWatch',
-                    copyTitle: item.title,
-                };
-
-                await new Promise((resolve) => {
-                    renderPinCanvas(data, (dataURL) => {
-                        item.generatedDataURL = dataURL;
-                        item.status = 'generated';
-                        completed++;
-                        const pct = Math.round((completed / total) * 100);
-                        document.getElementById('bulk-progress-fill').style.width = pct + '%';
-                        document.getElementById('bulk-progress-text').textContent =
-                            `Generated ${completed}/${total} pins`;
-                        renderBulkTable();
-                        resolve();
-                    });
-                });
-            }
-
-            state.bulkGenerated = true;
-            showToast(`✅ Generated ${total} pins! Click "Download ZIP" to export.`);
-        }
-
-        // ─── Download ZIP ───
-
-        function downloadBulkZIP() {
-            const items = state.bulkItems.filter(i => i.status === 'generated' && i.generatedDataURL);
-            if (items.length === 0) {
-                showToast('Generate some pins first!', true);
-                return;
-            }
-
-            const zip = new JSZip();
-            const folder = zip.folder('pins');
-            const metadata = [];
-            const tailwindRows = [];
-
-            items.forEach((item, idx) => {
-                const slug = item.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                const filename = `${slug}-pinterest-pin.png`;
-                const dataURL = item.generatedDataURL;
-                const base64 = dataURL.split(',')[1];
-                folder.file(filename, base64, { base64: true });
-
-                // Build copy for this movie
-                const vars = {
-                    title: item.title,
-                    year: item.year || '2026',
-                    currentYear: new Date().getFullYear(),
-                    genre: item.genre || 'film',
-                    director: 'a visionary director',
-                    castSnippet: 'a talented cast',
-                    synopsisSnippet: item.synopsis ? item.synopsis.slice(0, 120) + '...' : 'An unforgettable cinematic experience.',
-                    reaction: 'unforgettable',
-                };
-                const templateKey = item.template || 'whereToWatch';
-                const templates = state.copyTemplates[templateKey] || state.copyTemplates.whereToWatch;
-                const titleOption = (templates.titles || ['{{title}}'])[0] || '{{title}}';
-                const descOption = (templates.descriptions || ['{{title}}'])[0] || '{{title}}';
-                const pinTitle = fillTemplate(titleOption, vars);
-                const pinDesc = fillTemplate(descOption, vars);
-                const hashtags = buildHashtags(item, templateKey);
-
-                const fullDesc = `${pinTitle}\n\n${pinDesc}\n\n${hashtags.join(' ')}`;
-
-                metadata.push({
-                    filename,
-                    title: item.title,
-                    year: item.year,
-                    genre: item.genre,
-                    template: item.template,
-                    pin_title: pinTitle,
-                    pin_description: pinDesc,
-                    hashtags: hashtags.join(' '),
-                    full_pin_text: fullDesc,
-                });
-
-                tailwindRows.push({
-                    'Pin Title': pinTitle,
-                    'Description': fullDesc,
-                    'Image URL': filename,
-                    'Board': state.settings.boardName || 'Movie Streaming Guides',
-                    'Scheduled Date': '',
-                });
-            });
-
-            // ── metadata.csv ──
-            const metaHeaders = ['filename', 'title', 'year', 'genre', 'template', 'pin_title', 'pin_description', 'hashtags',
-                'full_pin_text'
-            ];
-            let metaCSV = metaHeaders.join(',') + '\n';
-            metadata.forEach(row => {
-                metaCSV += metaHeaders.map(h => {
-                    const val = row[h] || '';
-                    return `"${val.replace(/"/g, '""')}"`;
-                }).join(',') + '\n';
-            });
-            folder.file('metadata.csv', metaCSV);
-
-            // ── tailwind-import.csv ──
-            const twHeaders = ['Pin Title', 'Description', 'Image URL', 'Board', 'Scheduled Date'];
-            let twCSV = twHeaders.join(',') + '\n';
-            tailwindRows.forEach(row => {
-                twCSV += twHeaders.map(h => {
-                    const val = row[h] || '';
-                    return `"${val.replace(/"/g, '""')}"`;
-                }).join(',') + '\n';
-            });
-            folder.file('tailwind-import.csv', twCSV);
-
-            // ── Generate ZIP ──
-            zip.generateAsync({ type: 'blob' }).then((blob) => {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `flixbridge-pins-${new Date().toISOString().slice(0,10)}.zip`;
-                a.click();
-                URL.revokeObjectURL(a.href);
-                showToast(`📦 Downloaded ${items.length} pins + metadata!`);
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  KEYBOARD SHORTCUTS
-        // ═══════════════════════════════════════════════════════════════
-
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                const active = document.querySelector('.panel.active');
-                if (active && active.id === 'panel-single') {
-                    e.preventDefault();
-                    generateSinglePin();
-                }
-            }
-            if (e.key === 'Escape') {
-                closeSettings();
-            }
-        });
-
-        console.log('🎬 FlixBridge Pin Factory v2 loaded!');
-        console.log('📌 Tips:');
-        console.log('  - Ctrl+Enter to generate a pin');
-        console.log('  - Bulk mode: paste a list of movies');
-        console.log('  - Settings: gear icon for TMDB API key');
-        console.log('  - TMDB disclaimer is now on all pins ✅');
-    </script>
+<div class="app">
+<header class="header">
+<div class="logo">Flix<span>Bridge</span> <span style="font-size:14px;color:var(--text-2);font-weight:400;">Pin Factory v2.1</span></div>
+<div class="header-actions">
+<span class="badge">⚡ TMDB + Copy Engine + Bulk ZIP</span>
+<button class="btn btn-secondary btn-sm" onclick="openSettings()">⚙️ Settings</button>
+</div>
+</header>
+<div class="tabs">
+<button class="tab active" data-tab="single">🎬 Single Pin</button>
+<button class="tab" data-tab="bulk">📦 Bulk Generator</button>
+</div>
+<div class="panel active" id="panel-single">
+<div class="card">
+<h3>🎯 Movie &amp; Copy</h3>
+<label>Movie Title</label>
+<div class="flex" style="gap:8px;">
+<input type="text" id="single-title" placeholder="e.g. Inception" />
+<button class="btn btn-primary btn-sm" id="single-search-btn" onclick="searchSingleMovie()" style="white-space:nowrap;">🔍 Search</button>
+</div>
+<div id="single-search-results" class="search-results"></div>
+<label>Template Variant</label>
+<select id="single-template">
+<option value="whereToWatch">Where to Watch</option>
+<option value="comingSoon">Coming Soon</option>
+<option value="nowStreaming">Now Streaming</option>
+<option value="leavingSoon">⚠️ Leaving Soon</option>
+</select>
+<label>Title Variant</label>
+<select id="single-title-variant">
+<option value="0">Variant A</option>
+<option value="1">Variant B</option>
+<option value="2">Variant C</option>
+</select>
+<div class="row mt-8">
+<div><label>Year</label><input type="text" id="single-year" /></div>
+<div><label>Genre</label><input type="text" id="single-genre" /></div>
+</div>
+<label>Synopsis (for description)</label>
+<textarea id="single-synopsis" rows="2"></textarea>
+<label>Poster Image</label>
+<div class="upload-zone" id="single-upload-zone">
+<input type="file" id="single-poster-file" accept="image/*" onchange="handleSingleUpload(event)" />
+<div class="icon">🖼️</div>
+<div>Drop poster here or click to upload</div>
+<div class="sub">Or use TMDB poster from search above</div>
+</div>
+<div class="upload-preview" id="single-upload-preview"><img id="single-upload-preview-img" src="" alt="Preview" /></div>
+<div class="flex mt-8" style="gap:8px;">
+<button class="btn btn-outline btn-sm" onclick="clearSingleUpload()">🗑️ Clear Upload</button>
+<span class="text-muted" id="single-poster-source">Using TMDB poster</span>
+</div>
+<label>Generated Copy <span class="text-muted">(click to edit)</span></label>
+<div class="copy-box" id="single-copy-preview" contenteditable="true" spellcheck="false">Search for a movie to generate copy.</div>
+<div class="copy-options">
+<button class="btn btn-secondary btn-sm" onclick="copySingleText()">📋 Copy Text</button>
+<button class="btn btn-secondary btn-sm" onclick="regenerateSingleCopy()">🔄 Regenerate</button>
+<button class="btn btn-secondary btn-sm" onclick="copySingleHashtags()">#️⃣ Copy Hashtags</button>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" id="single-generate-btn" onclick="generateSinglePin()">🎨 Generate Pin</button>
+<button class="btn btn-success" id="single-download-btn" onclick="downloadSinglePNG()" disabled>⬇️ Download</button>
+</div>
+</div>
+<div class="card">
+<h3>🖼️ Preview</h3>
+<div class="preview-container">
+<div id="single-preview-area"><div class="preview-placeholder">Generate a pin to see preview</div></div>
+<div class="btn-group" id="single-output-buttons" style="display:none;">
+<button class="btn btn-success" onclick="downloadSinglePNG()">⬇️ Download PNG</button>
+<button class="btn btn-secondary" onclick="copySingleText()">📋 Copy Text</button>
+</div>
+</div>
+</div>
+</div>
+<div class="panel" id="panel-bulk">
+<div class="card">
+<h3>📦 Bulk Import</h3>
+<label>Paste movie titles (one per line or comma-separated)</label>
+<textarea id="bulk-input" rows="5" placeholder="Inception&#10;The Dark Knight&#10;Interstellar&#10;The Prestige&#10;Memento"></textarea>
+<div class="btn-group">
+<button class="btn btn-primary" id="bulk-resolve-btn" onclick="resolveBulk()">🔍 Resolve All</button>
+<button class="btn btn-secondary" onclick="clearBulk()">🗑️ Clear</button>
+</div>
+<label class="mt-16">Bulk Template Variant</label>
+<select id="bulk-template-select">
+<option value="whereToWatch">Where to Watch</option>
+<option value="comingSoon">Coming Soon</option>
+<option value="nowStreaming">Now Streaming</option>
+<option value="leavingSoon">⚠️ Leaving Soon</option>
+</select>
+<div class="btn-group">
+<button class="btn btn-success" id="bulk-generate-btn" onclick="generateBulk()">⚡ Generate All</button>
+<button class="btn btn-secondary" onclick="downloadBulkZIP()">📦 Download ZIP</button>
+</div>
+<div class="progress-bar"><div class="fill" id="bulk-progress-fill"></div></div>
+<div class="progress-text" id="bulk-progress-text">Ready</div>
+</div>
+<div class="card">
+<h3>📋 Queue <span id="bulk-count" class="text-muted">(0 items)</span></h3>
+<div class="bulk-table-wrap" id="bulk-table-wrap">
+<table class="bulk-table">
+<thead><tr><th style="width:28px;">#</th><th>Title</th><th style="width:70px;">Year</th><th style="width:110px;">Template</th><th style="width:70px;">Status</th><th style="width:80px;">Actions</th></tr></thead>
+<tbody id="bulk-table-body"><tr><td colspan="6" class="text-center text-muted" style="padding:30px;">Add movies to get started</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="settings-modal">
+<div class="modal">
+<h2>⚙️ Settings</h2>
+<label>TMDB API Key</label>
+<input type="text" id="settings-tmdb-key" placeholder="Enter your TMDB API key" />
+<p class="text-muted mt-8" style="font-size:12px;">Get a free key at <a href="https://www.themoviedb.org/signup" target="_blank" style="color:var(--accent);">themoviedb.org</a></p>
+<label class="mt-12">Default Board Name (for CSV)</label>
+<input type="text" id="settings-board" placeholder="Movie Streaming Guides" />
+<label class="mt-12">UTM Source</label>
+<input type="text" id="settings-utm-source" value="pinterest" />
+<label class="mt-12">CSV Format</label>
+<select id="settings-csv-format">
+<option value="tailwind">Tailwind (Pin Title, Description, Image URL, Board, Date)</option>
+<option value="buffer">Buffer (Text, Image, Link, Date)</option>
+<option value="later">Later (Caption, Media URL, Date)</option>
+<option value="generic">Generic (Filename, Title, Description, Hashtags)</option>
+</select>
+<div class="btn-group">
+<button class="btn btn-primary" onclick="saveSettings()">💾 Save</button>
+<button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+</div>
+</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+
+const LAYOUT={W:1000,H:1500,POSTER:{W:400,H:600,Y:180},TITLE_Y:820,BUTTON_Y:1380,BUTTON_W:440,BUTTON_H:64,BRAND_Y:1460};
+const GENRE_HASHTAGS={"Sci-Fi":["#SciFiMovies","#SpaceMovies","#SciFiFilm","#FuturisticFilm"],"Action":["#ActionMovies","#Blockbuster","#ActionFilm","#AdrenalineRush"],"Drama":["#DramaMovies","#OscarWorthy","#MovieDrama","#EmotionalFilm"],"Comedy":["#ComedyMovies","#FunnyFilms","#ComedyFilm","#LaughOutLoud"],"Horror":["#HorrorMovies","#ScaryMovies","#HorrorFilm","#ThrillerNight"],"Thriller":["#ThrillerMovies","#Suspense","#ThrillerFilm","#EdgeOfYourSeat"],"Romance":["#RomanceMovies","#LoveStory","#RomCom","#DateNight"],"Adventure":["#AdventureMovies","#EpicFilm","#AdventureFilm","#JourneyFilm"],"Animation":["#AnimationMovies","#AnimatedFilm","#FamilyMovies","#PixarStyle"],"Documentary":["#DocumentaryMovies","#TrueStory","#DocFilm","#RealLife"],"Fantasy":["#FantasyMovies","#MagicFilm","#FantasyWorld","#EpicFantasy"],"Crime":["#CrimeMovies","#MysteryFilm","#DetectiveStory","#NoirFilm"],"Musical":["#MusicalMovies","#MusicFilm","#SongAndDance","#BroadwayFilm"],"War":["#WarMovies","#MilitaryFilm","#BattleFilm","#HistoricalDrama"],"Western":["#WesternMovies","#CowboyFilm","#OldWest","#FrontierFilm"]};
+const state={singleMovie:null,singleCopy:null,singleCanvasData:null,singleUploadedPoster:null,singlePosterSource:'tmdb',singleTemplate:'whereToWatch',bulkItems:[],bulkGenerated:false,settings:{tmdbKey:'',boardName:'Movie Streaming Guides',utmSource:'pinterest',csvFormat:'tailwind'},imageCache:new Map(),isGenerating:false};
+const COPY_TEMPLATES={whereToWatch:{titles:["Where to Watch {{title}} ({{year}}) — Streaming Guide 🎬","{{title}} ({{year}}): Where to Stream It Right Now 🍿","Your Guide to Watching {{title}} in {{currentYear}} 📺"],descriptions:["{{director}}'s {{genre}} masterpiece is a must-watch.\n\n{{castSnippet}} star in this {{genre}} film that will keep you on the edge of your seat.\n\nFind exactly where to stream {{title}} in {{currentYear}}. No spoilers, no clickbait — just the facts.","Looking for {{title}}? We've got you covered.\n\n{{synopsisSnippet}}\n\nSave this pin for your next movie night! 🍿"]},comingSoon:{titles:["{{title}} — Coming to Streaming Soon 🎬","Get Ready: {{title}} Hits Streaming Soon 📅","{{title}} ({{year}}): Coming Soon to a Platform Near You"],descriptions:["{{title}} is coming to streaming soon! 🎉\n\n{{synopsisSnippet}}\n\nFollow for updates on exactly where to watch {{title}} when it drops.","Mark your calendars! {{title}} is arriving on streaming soon.\n\n{{director}}'s {{genre}} film stars {{castSnippet}}.\n\nSave this pin to get notified when it's available."]},nowStreaming:{titles:["{{title}} — Now Streaming! 🎉","{{title}} ({{year}}) Is Now Streaming — Watch Today 🍿","Just Dropped: {{title}} Is Available to Stream Now"],descriptions:["{{title}} is NOW STREAMING! 🔥\n\n{{synopsisSnippet}}\n\nFind out exactly where to watch {{title}} right now. Don't wait — start your movie night!","{{director}}'s {{genre}} film is finally here.\n\n{{castSnippet}} deliver unforgettable performances.\n\nClick through to find where to stream {{title}} today."]},leavingSoon:{titles:["⚠️ Leaving Soon: {{title}} — Last Chance to Watch!","{{title}} ({{year}}) — Leaving Streaming This Month ⚠️","Don't Miss It: {{title}} Is Leaving Soon 🚨"],descriptions:["{{title}} is leaving streaming soon! ⚠️\n\n{{synopsisSnippet}}\n\nDon't miss your chance to watch {{director}}'s {{genre}} masterpiece before it's gone.\n\nFind out where to watch {{title}} right now.","Last chance to stream {{title}}! 🚨\n\n{{castSnippet}} star in this must-watch {{genre}} film.\n\nClick through to see where {{title}} is still available."]}};
+
+document.addEventListener('DOMContentLoaded',()=>{loadSettings();restoreState();initTabs();initDragDrop();document.getElementById('single-title').addEventListener('keydown',e=>{if(e.key==='Enter')searchSingleMovie()});document.getElementById('single-template').addEventListener('change',()=>{if(state.singleMovie)generateSingleCopy()});document.getElementById('single-title-variant').addEventListener('change',()=>{if(state.singleMovie)generateSingleCopy()});document.getElementById('single-copy-preview').addEventListener('blur',()=>{if(state.singleCopy){const text=document.getElementById('single-copy-preview').innerText;const lines=text.split('\n').filter(l=>l.trim());if(lines.length>=3){state.singleCopy.title=lines[0].replace(/^📌\s*/,'');const hashLine=lines[lines.length-1];if(hashLine.includes('#')){state.singleCopy.hashtags=hashLine.split(/\s+/).filter(t=>t.startsWith('#'));state.singleCopy.description=lines.slice(1,-1).join('\n').trim()}else{state.singleCopy.description=lines.slice(1).join('\n').trim()}}saveState()}});document.getElementById('settings-csv-format').value=state.settings.csvFormat||'tailwind';console.log('🎬 FlixBridge Pin Factory v2.1 loaded!');console.log('Shortcuts: Ctrl+Enter (single), Ctrl+Shift+Enter (bulk), Escape (close modals)')});
+function initTabs(){document.querySelectorAll('.tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+tab.dataset.tab).classList.add('active')})})}
+function initDragDrop(){const zone=document.getElementById('single-upload-zone');['dragenter','dragover','dragleave','drop'].forEach(evt=>zone.addEventListener(evt,e=>{e.preventDefault();e.stopPropagation()}));['dragenter','dragover'].forEach(evt=>zone.addEventListener(evt,()=>zone.classList.add('dragover')));['dragleave','drop'].forEach(evt=>zone.addEventListener(evt,()=>zone.classList.remove('dragover')));zone.addEventListener('drop',e=>{const files=e.dataTransfer.files;if(files.length)handleFile(files[0])})}
+function handleSingleUpload(event){const file=event.target.files[0];if(file)handleFile(file)}
+function handleFile(file){if(!file.type.startsWith('image/')){showToast('Please upload an image file',true);return}const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=()=>{state.singleUploadedPoster=img;state.singlePosterSource='upload';document.getElementById('single-upload-preview-img').src=e.target.result;document.getElementById('single-upload-preview').style.display='block';document.getElementById('single-poster-source').textContent='Using uploaded image';showToast('✅ Poster uploaded')};img.src=e.target.result};reader.readAsDataURL(file)}
+function clearSingleUpload(){state.singleUploadedPoster=null;state.singlePosterSource='tmdb';document.getElementById('single-poster-file').value='';document.getElementById('single-upload-preview').style.display='none';document.getElementById('single-upload-preview-img').src='';document.getElementById('single-poster-source').textContent='Using TMDB poster';showToast('🗑️ Upload cleared')}
+function saveState(){try{localStorage.setItem('flixbridge_pin_factory_state',JSON.stringify({singleMovie:state.singleMovie,singleCopy:state.singleCopy,singleTemplate:state.singleTemplate,singlePosterSource:state.singlePosterSource,bulkItems:state.bulkItems,bulkGenerated:state.bulkGenerated}))}catch(_){}}
+function restoreState(){try{const saved=localStorage.getItem('flixbridge_pin_factory_state');if(!saved)return;const parsed=JSON.parse(saved);if(parsed.singleMovie){state.singleMovie=parsed.singleMovie;document.getElementById('single-year').value=state.singleMovie.year||'';document.getElementById('single-genre').value=state.singleMovie.genre||'';document.getElementById('single-synopsis').value=state.singleMovie.synopsis||'';generateSingleCopy();document.getElementById('single-search-results').innerHTML=`<div style="padding:8px;color:var(--green);">✅ Restored: <strong>${state.singleMovie.title}</strong></div>`}if(parsed.bulkItems?.length){state.bulkItems=parsed.bulkItems;renderBulkTable()}}catch(_){}}
+function loadSettings(){try{const saved=localStorage.getItem('flixbridge_pin_factory_settings');if(saved)Object.assign(state.settings,JSON.parse(saved))}catch(_){}document.getElementById('settings-tmdb-key').value=state.settings.tmdbKey||'';document.getElementById('settings-board').value=state.settings.boardName||'Movie Streaming Guides';document.getElementById('settings-utm-source').value=state.settings.utmSource||'pinterest';document.getElementById('settings-csv-format').value=state.settings.csvFormat||'tailwind'}
+function saveSettings(){state.settings.tmdbKey=document.getElementById('settings-tmdb-key').value.trim();state.settings.boardName=document.getElementById('settings-board').value.trim()||'Movie Streaming Guides';state.settings.utmSource=document.getElementById('settings-utm-source').value.trim()||'pinterest';state.settings.csvFormat=document.getElementById('settings-csv-format').value||'tailwind';localStorage.setItem('flixbridge_pin_factory_settings',JSON.stringify(state.settings));closeSettings();showToast('✅ Settings saved!')}
+function openSettings(){document.getElementById('settings-modal').classList.add('open')}
+function closeSettings(){document.getElementById('settings-modal').classList.remove('open')}
+function getTMDBKey(){if(!state.settings.tmdbKey){showToast('⚠️ Please set your TMDB API key in Settings',true);openSettings();return null}return state.settings.tmdbKey}
+let toastTimeout;function showToast(msg,isError){const el=document.getElementById('toast');el.textContent=msg;el.className='toast';if(isError)el.classList.add('error');clearTimeout(toastTimeout);void el.offsetWidth;el.classList.add('show');toastTimeout=setTimeout(()=>el.classList.remove('show'),4000)}
+let singleSearchResults=[];
+async function searchSingleMovie(){const key=getTMDBKey();if(!key)return;const title=document.getElementById('single-title').value.trim();if(!title){showToast('Please enter a movie title',true);return}const btn=document.getElementById('single-search-btn');btn.disabled=true;btn.textContent='⏳ Searching...';try{const url=`https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${encodeURIComponent(title)}&language=en-US&page=1`;const res=await fetch(url);if(!res.ok)throw new Error('TMDB API: '+res.status);const data=await res.json();singleSearchResults=data.results||[];renderSearchResults(singleSearchResults);if(singleSearchResults.length===0)showToast('No movies found. Try a different title.',true)}catch(err){showToast('❌ Search failed: '+err.message,true)}finally{btn.disabled=false;btn.textContent='🔍 Search'}}
+function renderSearchResults(results){const container=document.getElementById('single-search-results');if(!results?.length){container.innerHTML='<p class="text-muted">No results</p>';return}container.innerHTML=results.map((m,i)=>{const year=m.release_date?m.release_date.slice(0,4):'';const posterUrl=m.poster_path?`https://image.tmdb.org/t/p/w92${m.poster_path}`:'';return`<div class="search-result-item" onclick="selectSingleMovie(${i})">${posterUrl?`<img src="${posterUrl}" alt="" loading="lazy" onerror="this.style.display='none'" />`:'<div style="width:36px;height:54px;background:var(--surface-2);border-radius:4px;flex-shrink:0;"></div>'}<div class="info"><strong>${m.title}</strong><span>${year} ${m.vote_average?'⭐ '+m.vote_average.toFixed(1):''} ${m.vote_count?'('+m.vote_count.toLocaleString()+' votes)':''}</span></div></div>`}).join('')}
+async function selectSingleMovie(index){const movie=singleSearchResults[index];if(!movie)return;const key=getTMDBKey();let details=movie;try{const url=`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${key}&language=en-US&append_to_response=credits`;const res=await fetch(url);if(res.ok)details=await res.json()}catch(_){}const genre=details.genres?.[0]?.name||'Film';const cast=details.credits?.cast?.slice(0,4).map(c=>c.name)||[];const director=details.credits?.crew?.find(c=>c.job==='Director')?.name||'a visionary director';state.singleMovie={id:details.id,title:details.title,year:details.release_date?details.release_date.slice(0,4):'',genre,director,cast,synopsis:details.overview||'',poster_path:details.poster_path||''};document.getElementById('single-year').value=state.singleMovie.year;document.getElementById('single-genre').value=state.singleMovie.genre;document.getElementById('single-synopsis').value=state.singleMovie.synopsis;generateSingleCopy();document.getElementById('single-search-results').innerHTML=`<div style="padding:8px;color:var(--green);">✅ Selected: <strong>${state.singleMovie.title}</strong></div>`;showToast(`✅ Loaded: ${state.singleMovie.title}`);saveState()}
+function generateSingleCopy(){const movie=state.singleMovie;if(!movie){document.getElementById('single-copy-preview').innerHTML='Search for a movie to generate copy.';return}const templateKey=document.getElementById('single-template').value;const variantIdx=parseInt(document.getElementById('single-title-variant').value)||0;const templates=COPY_TEMPLATES[templateKey]||COPY_TEMPLATES.whereToWatch;const vars=buildVars(movie);const title=fillTemplate(templates.titles[variantIdx%templates.titles.length],vars);const description=fillTemplate(templates.descriptions[0]||templates.descriptions[1],vars);const hashtags=buildHashtags(movie,templateKey);state.singleCopy={title,description,hashtags};const preview=document.getElementById('single-copy-preview');preview.innerHTML=`<strong>📌 ${title}</strong>\n\n${description}\n\n<span style="color:var(--gold);">${hashtags.join(' ')}</span>`;saveState()}
+function buildVars(movie){return{title:movie.title||'Movie Title',year:movie.year||'2026',currentYear:new Date().getFullYear(),genre:movie.genre||'film',director:movie.director||'a visionary director',castSnippet:movie.cast?.length?movie.cast.slice(0,3).join(', '):'a talented cast',synopsisSnippet:movie.synopsis?movie.synopsis.slice(0,150)+(movie.synopsis.length>150?'...':''):'An unforgettable cinematic experience.',reaction:'unforgettable',titleSlug:(movie.title||'').toLowerCase().replace(/[^a-z0-9]/g,''),directorSlug:(movie.director||'film').toLowerCase().replace(/\s+/g,''),leadActorSlug:movie.cast?.[0]?.toLowerCase().replace(/\s+/g,'')||'movie'}}
+function buildHashtags(movie,templateKey){const tags=['#WhereToWatch','#StreamingGuide','#MovieNight'];if(movie.title){const slug=movie.title.toLowerCase().replace(/[^a-z0-9]/g,'');if(slug)tags.push('#'+slug)}if(movie.director&&movie.director!=='a visionary director'){const slug=movie.director.toLowerCase().replace(/\s+/g,'');if(slug)tags.push('#'+slug)}const genreKey=Object.keys(GENRE_HASHTAGS).find(g=>movie.genre&&movie.genre.toLowerCase().includes(g.toLowerCase()));if(genreKey)tags.push(...GENRE_HASHTAGS[genreKey].slice(0,2));const templateTags={leavingSoon:['#LeavingSoon','#LastChance','#StreamingAlert'],comingSoon:['#ComingSoon','#NewOnStreaming','#MustWatch'],nowStreaming:['#NowStreaming','#WatchNow','#BingeWorthy']};if(templateTags[templateKey])tags.push(...templateTags[templateKey]);const unique=[];const seen=new Set();for(const t of tags){const clean=t.trim();if(clean&&!seen.has(clean)){seen.add(clean);unique.push(clean)}}return unique.slice(0,12)}
+function fillTemplate(template,vars){let result=template;for(const[key,val]of Object.entries(vars)){const replacement=val!==undefined&&val!==null&&val!==''?val:getFallback(key);result=result.replace(new RegExp('{{'+key+'}}','g'),replacement)}return result.replace(/\{\{[^}]+\}\}/g,'')}
+function getFallback(key){const fallbacks={director:'a visionary director',castSnippet:'a talented cast',synopsisSnippet:'An unforgettable cinematic experience.',genre:'film',year:'2026',title:'Movie Title'};return fallbacks[key]||''}
+function regenerateSingleCopy(){if(state.singleMovie)generateSingleCopy()}
+function copySingleText(){const copy=state.singleCopy;if(!copy){showToast('Generate copy first!',true);return}copyToClipboard(`${copy.title}\n\n${copy.description}\n\n${copy.hashtags.join(' ')}`,'✅ Full copy copied!')}
+function copySingleHashtags(){const copy=state.singleCopy;if(!copy){showToast('Generate copy first!',true);return}copyToClipboard(copy.hashtags.join(' '),'✅ Hashtags copied!')}
+function copyToClipboard(text,successMsg){navigator.clipboard.writeText(text).then(()=>showToast(successMsg)).catch(()=>{const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();showToast(successMsg)})}
+function generateSinglePin(){const movie=state.singleMovie;if(!movie){showToast('Search and select a movie first!',true);return}if(!state.singleCopy)generateSingleCopy();const data={title:movie.title,year:movie.year||'',genre:movie.genre||'',posterPath:movie.poster_path,template:document.getElementById('single-template').value,copyTitle:state.singleCopy?.title||movie.title};renderPinCanvas(data,dataURL=>{if(!dataURL)return;state.singleCanvasData=dataURL;document.getElementById('single-preview-area').innerHTML=`<img src="${dataURL}" style="max-width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);" />`;document.getElementById('single-output-buttons').style.display='flex';document.getElementById('single-download-btn').disabled=false;showToast('✅ Pin generated!')})}
+function renderPinCanvas(data,callback){const canvas=document.createElement('canvas');const{W,H}=LAYOUT;canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');const bgs=[['#0a0f1a','#1a1a2e'],['#0a0f1a','#1e1a2e'],['#0a0f1a','#1e2a2e'],['#0a0f1a','#2e1a1a'],['#0a0f1a','#1a1a1a']];const[c1,c2]=bgs[Math.floor(Math.random()*bgs.length)];const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,c1);grad.addColorStop(1,c2);ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(255,255,255,0.015)';for(let i=0;i<40;i++){ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H,1+Math.random()*3,0,Math.PI*2);ctx.fill()}ctx.textAlign='center';ctx.textBaseline='top';const badges={whereToWatch:'📺 WHERE TO WATCH',comingSoon:'📅 COMING SOON',nowStreaming:'🎉 NOW STREAMING',leavingSoon:'⚠️ LEAVING SOON'};ctx.font='bold 36px system-ui, sans-serif';ctx.fillStyle='rgba(255,255,255,0.12)';ctx.fillText(badges[data.template]||'📺 WHERE TO WATCH',W/2,40);const{POSTER}=LAYOUT;const posterX=(W-POSTER.W)/2;ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=40;ctx.shadowOffsetY=8;ctx.fillStyle='#1a1a2a';ctx.fillRect(posterX-4,POSTER.Y-4,POSTER.W+8,POSTER.H+8);ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;if(state.singlePosterSource==='upload'&&state.singleUploadedPoster){drawPosterImage(ctx,state.singleUploadedPoster,posterX,POSTER.Y,POSTER.W,POSTER.H);finishCanvas(ctx,W,H,data,canvas,callback);return}if(data.posterPath){const posterUrl=`https://image.tmdb.org/t/p/w500${data.posterPath}`;const cached=state.imageCache.get(posterUrl);if(cached){drawPosterImage(ctx,cached,posterX,POSTER.Y,POSTER.W,POSTER.H);finishCanvas(ctx,W,H,data,canvas,callback);return}const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{state.imageCache.set(posterUrl,img);drawPosterImage(ctx,img,posterX,POSTER.Y,POSTER.W,POSTER.H);finishCanvas(ctx,W,H,data,canvas,callback)};img.onerror=()=>{drawPosterPlaceholder(ctx,posterX,POSTER.Y,POSTER.W,POSTER.H,data.title);finishCanvas(ctx,W,H,data,canvas,callback)};img.src=posterUrl}else{drawPosterPlaceholder(ctx,posterX,POSTER.Y,POSTER.W,POSTER.H,data.title);finishCanvas(ctx,W,H,data,canvas,callback)}}
+function drawPosterImage(ctx,img,x,y,w,h){const asp=img.width/img.height;let dw=w,dh=w/asp;if(dh<h){dh=h;dw=h*asp}ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);const vig=ctx.createLinearGradient(0,y+h*0.6,0,y+h);vig.addColorStop(0,'transparent');vig.addColorStop(1,'rgba(7,7,7,0.6)');ctx.fillStyle=vig;ctx.fillRect(x,y,w,h)}
+function drawPosterPlaceholder(ctx,x,y,w,h,title){ctx.fillStyle='#2a2f3a';ctx.fillRect(x,y,w,h);ctx.fillStyle='#475569';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='24px system-ui, sans-serif';ctx.fillText('🎬',x+w/2,y+h/2-20);ctx.font='18px system-ui, sans-serif';ctx.fillText(title||'Movie Poster',x+w/2,y+h/2+30)}
+function finishCanvas(ctx,W,H,data,canvas,callback){drawTextOverlay(ctx,W,H,data);try{callback(canvas.toDataURL('image/png'))}catch(err){showToast('⚠️ Canvas security error. Try uploading poster manually.',true);console.error(err);callback(null)}}
+function drawTextOverlay(ctx,W,H,data){const{TITLE_Y,BUTTON_Y,BUTTON_W,BUTTON_H,BRAND_Y}=LAYOUT;ctx.textAlign='center';ctx.textBaseline='top';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=20;ctx.shadowOffsetY=4;const titleText=(data.title||'Movie Title').toUpperCase();const fontSize=titleText.length>22?52:titleText.length>16?58:64;ctx.font=`800 ${fontSize}px system-ui, sans-serif`;ctx.fillStyle='#f59e0b';ctx.fillText(titleText,W/2,TITLE_Y);ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;const metaText=data.year?`${data.year}${data.genre?' • '+data.genre:''}`:(data.genre||'');if(metaText){ctx.font='28px system-ui, sans-serif';ctx.fillStyle='rgba(255,255,255,0.6)';ctx.fillText(metaText,W/2,TITLE_Y+fontSize+20)}const divY=TITLE_Y+fontSize+70;const divGrad=ctx.createLinearGradient(200,0,W-200,0);divGrad.addColorStop(0,'transparent');divGrad.addColorStop(0.3,'rgba(234,88,12,0.5)');divGrad.addColorStop(0.7,'rgba(234,88,12,0.5)');divGrad.addColorStop(1,'transparent');ctx.strokeStyle=divGrad;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(200,divY);ctx.lineTo(W-200,divY);ctx.stroke();const btnX=(W-BUTTON_W)/2;ctx.shadowColor='rgba(234,88,12,0.3)';ctx.shadowBlur=30;ctx.shadowOffsetY=4;const btnGrad=ctx.createLinearGradient(btnX,BUTTON_Y,btnX+BUTTON_W,BUTTON_Y+BUTTON_H);btnGrad.addColorStop(0,'#ea580c');btnGrad.addColorStop(1,'#c2410c');ctx.fillStyle=btnGrad;if(ctx.roundRect){ctx.beginPath();ctx.roundRect(btnX,BUTTON_Y,BUTTON_W,BUTTON_H,12);ctx.fill()}else{ctx.fillRect(btnX,BUTTON_Y,BUTTON_W,BUTTON_H)}ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;const ctas={whereToWatch:'Find Where to Watch →',comingSoon:'Coming Soon →',nowStreaming:'Watch Now →',leavingSoon:"Watch Before It's Gone →"};ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 26px system-ui, sans-serif';ctx.fillStyle='#fff';ctx.fillText(ctas[data.template]||'Find Where to Watch →',W/2,BUTTON_Y+BUTTON_H/2);ctx.textAlign='right';ctx.textBaseline='bottom';ctx.font='18px system-ui, sans-serif';ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillText('FlixBridge',W-40,BRAND_Y);ctx.textAlign='left';ctx.textBaseline='bottom';ctx.font='10px system-ui, sans-serif';ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillText('Data from TMDB — Not endorsed or certified by TMDB',20,H-10)}
+if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){if(typeof r==='number')r=[r,r,r,r];const[tl,tr,br,bl]=r;this.moveTo(x+tl,y);this.lineTo(x+w-tr,y);this.quadraticCurveTo(x+w,y,x+w,y+tr);this.lineTo(x+w,y+h-br);this.quadraticCurveTo(x+w,y+h,x+w-br,y+h);this.lineTo(x+bl,y+h);this.quadraticCurveTo(x,y+h,x,y+h-bl);this.lineTo(x,y+tl);this.quadraticCurveTo(x,y,x+tl,y);this.closePath();return this}}
+function downloadSinglePNG(){if(!state.singleCanvasData){showToast('Generate a pin first!',true);return}const a=document.createElement('a');const slug=state.singleMovie?.title?.toLowerCase().replace(/[^a-z0-9]+/g,'-')||'pin';a.download=`${slug}-pinterest-pin.png`;a.href=state.singleCanvasData;a.click();showToast('⬇️ Downloading...')}
+async function resolveBulk(){const key=getTMDBKey();if(!key)return;const raw=document.getElementById('bulk-input').value.trim();if(!raw){showToast('Paste some movie titles first!',true);return}const titles=raw.split(/[\n,]+/).map(s=>s.trim()).filter(s=>s.length>0);if(!titles.length){showToast('No valid titles found',true);return}if(titles.length>50){showToast('Maximum 50 movies at a time',true);return}state.bulkItems=[];state.bulkGenerated=false;const template=document.getElementById('bulk-template-select').value;showToast(`🔍 Resolving ${titles.length} movies...`);setBulkProgress(0,`Resolving 0/${titles.length}...`);const btn=document.getElementById('bulk-resolve-btn');btn.disabled=true;btn.textContent='⏳ Resolving...';for(let i=0;i<titles.length;i++){try{const url=`https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${encodeURIComponent(titles[i])}&language=en-US&page=1`;const res=await fetch(url);if(!res.ok)throw new Error('err');const data=await res.json();const m=data.results?.[0];if(m)state.bulkItems.push({id:m.id,title:m.title,year:m.release_date?m.release_date.slice(0,4):'',genre:'',synopsis:m.overview||'',poster_path:m.poster_path||'',template,status:'resolved',generatedDataURL:null,copy:null});else state.bulkItems.push({id:null,title:titles[i],year:'',genre:'',synopsis:'',poster_path:'',template,status:'error',generatedDataURL:null,copy:null})}catch(_){state.bulkItems.push({id:null,title:titles[i],year:'',genre:'',synopsis:'',poster_path:'',template,status:'error',generatedDataURL:null,copy:null})}setBulkProgress(Math.round(((i+1)/titles.length)*100),`Resolved ${i+1}/${titles.length}...`);renderBulkTable()}btn.disabled=false;btn.textContent='🔍 Resolve All';const resolved=state.bulkItems.filter(i=>i.status==='resolved').length;showToast(`✅ Resolved ${resolved}/${titles.length} movies`);setBulkProgress(0,'Ready');saveState()}
+function setBulkProgress(pct,text){document.getElementById('bulk-progress-fill').style.width=pct+'%';document.getElementById('bulk-progress-text').textContent=text}
+function renderBulkTable(){const tbody=document.getElementById('bulk-table-body');const items=state.bulkItems;if(!items.length){tbody.innerHTML=`<tr><td colspan="6" class="text-center text-muted" style="padding:30px;">Add movies to get started</td></tr>`;document.getElementById('bulk-count').textContent='(0 items)';return}document.getElementById('bulk-count').textContent=`(${items.length} items)`;tbody.innerHTML=items.map((item,idx)=>{const statusClass=item.status==='pending'?'pending':item.status==='resolved'?'resolved':item.status==='generating'?'generating':item.status==='generated'?'generated':'error';const statusIcon=item.status==='pending'?'⏳':item.status==='resolved'?'✅':item.status==='generating'?'⚙️':item.status==='generated'?'🎨':'❌';return`<tr><td>${idx+1}</td><td><input type="text" value="${esc(item.title)}" onchange="updateBulkItem(${idx},'title',this.value)" style="background:transparent;border:none;color:var(--text);padding:4px;width:100%;" /></td><td><input type="text" value="${esc(item.year)}" onchange="updateBulkItem(${idx},'year',this.value)" style="width:60px;background:transparent;border:none;color:var(--text);padding:4px;" /></td><td><select onchange="updateBulkItem(${idx},'template',this.value)" style="width:100%;padding:4px;font-size:11px;"><option value="whereToWatch" ${item.template==='whereToWatch'?'selected':''}>Where to Watch</option><option value="comingSoon" ${item.template==='comingSoon'?'selected':''}>Coming Soon</option><option value="nowStreaming" ${item.template==='nowStreaming'?'selected':''}>Now Streaming</option><option value="leavingSoon" ${item.template==='leavingSoon'?'selected':''}>⚠️ Leaving Soon</option></select></td><td><span class="status-dot ${statusClass}" title="${item.status}"></span> ${statusIcon}</td><td class="actions"><button class="btn-ghost btn-xs" onclick="reResolveBulkItem(${idx})" title="Re-resolve">🔍</button><button class="btn-ghost btn-xs" onclick="removeBulkItem(${idx})" title="Remove">🗑️</button></td></tr>`}).join('')}
+function esc(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function updateBulkItem(idx,field,value){if(!state.bulkItems[idx])return;state.bulkItems[idx][field]=value;if(field==='title')state.bulkItems[idx].status='pending';renderBulkTable();saveState()}
+async function reResolveBulkItem(idx){const key=getTMDBKey();if(!key)return;const item=state.bulkItems[idx];if(!item)return;try{const url=`https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${encodeURIComponent(item.title)}&language=en-US&page=1`;const res=await fetch(url);if(!res.ok)throw new Error('err');const data=await res.json();const m=data.results?.[0];if(m){item.id=m.id;item.title=m.title;item.year=m.release_date?m.release_date.slice(0,4):'';item.synopsis=m.overview||'';item.poster_path=m.poster_path||'';item.status='resolved';showToast(`✅ Re-resolved: ${m.title}`)}else{item.status='error';showToast(`❌ Could not resolve: ${item.title}`,true)}}catch(_){item.status='error';showToast(`❌ Network error: ${item.title}`,true)}renderBulkTable();saveState()}
+function removeBulkItem(idx){state.bulkItems.splice(idx,1);renderBulkTable();saveState();showToast('🗑️ Item removed')}
+function clearBulk(){state.bulkItems=[];state.bulkGenerated=false;document.getElementById('bulk-input').value='';renderBulkTable();setBulkProgress(0,'Ready');saveState()}
+async function generateBulk(){if(state.isGenerating){showToast('Already generating...',true);return}const items=state.bulkItems.filter(i=>i.status==='resolved');if(!items.length){showToast('Resolve some movies first!',true);return}state.isGenerating=true;const btn=document.getElementById('bulk-generate-btn');btn.disabled=true;btn.textContent='⏳ Generating...';const total=items.length;let completed=0;for(let i=0;i<state.bulkItems.length;i++){const item=state.bulkItems[i];if(item.status!=='resolved')continue;item.status='generating';renderBulkTable();const vars=buildVars(item);const templates=COPY_TEMPLATES[item.template]||COPY_TEMPLATES.whereToWatch;item.copy={title:fillTemplate(templates.titles[0],vars),description:fillTemplate(templates.descriptions[0],vars),hashtags:buildHashtags(item,item.template)};const data={title:item.title,year:item.year||'',genre:item.genre||'',posterPath:item.poster_path,template:item.template,copyTitle:item.copy.title};await new Promise(resolve=>{renderPinCanvas(data,dataURL=>{if(dataURL){item.generatedDataURL=dataURL;item.status='generated'}else{item.status='error'}completed++;setBulkProgress(Math.round((completed/total)*100),`Generated ${completed}/${total} pins`);renderBulkTable();resolve()})});await new Promise(r=>setTimeout(r,50))}state.bulkGenerated=true;state.isGenerating=false;btn.disabled=false;btn.textContent='⚡ Generate All';setBulkProgress(100,`Done — ${completed} pins generated`);showToast(`✅ Generated ${completed} pins! Click "Download ZIP" to export.`);saveState()}
+function downloadBulkZIP(){const items=state.bulkItems.filter(i=>i.status==='generated'&&i.generatedDataURL);if(!items.length){showToast('Generate some pins first!',true);return}const zip=new JSZip();const folder=zip.folder('pins');const metadata=[];const format=state.settings.csvFormat||'tailwind';items.forEach(item=>{const slug=item.title.toLowerCase().replace(/[^a-z0-9]/g,'-');const filename=`${slug}-pinterest-pin.png`;folder.file(filename,item.generatedDataURL.split(',')[1],{base64:true});const copy=item.copy||{title:item.title,description:'',hashtags:[]};const fullText=`${copy.title}\n\n${copy.description}\n\n${copy.hashtags.join(' ')}`;metadata.push({filename,title:item.title,year:item.year,genre:item.genre,template:item.template,pin_title:copy.title,pin_description:copy.description,hashtags:copy.hashtags.join(' '),full_pin_text:fullText})});const metaHeaders=['filename','title','year','genre','template','pin_title','pin_description','hashtags','full_pin_text'];let metaCSV=metaHeaders.join(',')+'\n';metadata.forEach(row=>{metaCSV+=metaHeaders.map(h=>`"${(row[h]||'').replace(/"/g,'""')}"`).join(',')+'\n'});folder.file('metadata.csv',metaCSV);const schedulers={tailwind:{headers:['Pin Title','Description','Image URL','Board','Scheduled Date'],rows:metadata.map(m=>({'Pin Title':m.pin_title,'Description':m.full_pin_text,'Image URL':m.filename,'Board':state.settings.boardName||'Movie Streaming Guides','Scheduled Date':''}))},buffer:{headers:['Text','Image','Link','Date'],rows:metadata.map(m=>({'Text':m.full_pin_text,'Image':m.filename,'Link':'','Date':''}))},later:{headers:['Caption','Media URL','Date'],rows:metadata.map(m=>({'Caption':m.full_pin_text,'Media URL':m.filename,'Date':''}))},generic:{headers:['Filename','Title','Description','Hashtags'],rows:metadata.map(m=>({'Filename':m.filename,'Title':m.pin_title,'Description':m.pin_description,'Hashtags':m.hashtags}))}};const sched=schedulers[format]||schedulers.tailwind;let schedCSV=sched.headers.join(',')+'\n';sched.rows.forEach(row=>{schedCSV+=sched.headers.map(h=>`"${(row[h]||'').replace(/"/g,'""')}"`).join(',')+'\n'});folder.file(`${format}-import.csv`,schedCSV);zip.generateAsync({type:'blob'}).then(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`flixbridge-pins-${new Date().toISOString().slice(0,10)}.zip`;a.click();URL.revokeObjectURL(a.href);showToast(`📦 Downloaded ${items.length} pins + ${format} CSV!`)})}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&!e.shiftKey){const activePanel=document.querySelector('.panel.active');if(activePanel?.id==='panel-single'){e.preventDefault();generateSinglePin()}}if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='Enter'){const activePanel=document.querySelector('.panel.active');if(activePanel?.id==='panel-bulk'){e.preventDefault();generateBulk()}}});
+
+</script>
 </body>
 </html>
