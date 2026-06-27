@@ -291,7 +291,7 @@ const COPY_TEMPLATES={whereToWatch:{titles:["Where to Watch {{title}} ({{year}})
 
 document.addEventListener('DOMContentLoaded',()=>{
   // ── LOGIN GATE ──
-  const PW_HASH='8e459a49c0d39d2be8e22c3df88c72a3a22b57e7bcb4ef6b87e0ef77e2a49c99'; // sha256 of "flixbridge2024"
+  const PW_HASH='3b9a6c3c2175158a1f0c663b2a366175d123c568beb32548f8c52ad026e8d081'; // sha256 of "flixbridge2024"
   async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
   async function attemptLogin(){
     const pw=document.getElementById('login-pw').value;
